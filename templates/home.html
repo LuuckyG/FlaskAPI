@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Home</title>
+	<!-- <link rel="stylesheet" type="text/css" href="../static/css/style.css"> -->
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+
+	<header>
+		<div class="container">
+		<div id="brandname">
+			Machine Learning App with Flask
+		</div>
+		<h2>Spam Detector For SMS Messages</h2>
+
+	</div>
+	</header>
+
+	<div class="ml-container">
+
+		<form action="{{ url_for('predict')}}" method="POST">
+		<p>Enter Your Message Here</p>
+		<!-- <input type="text" name="comment"/> -->
+		<textarea name="message" rows="4" cols="50"></textarea>
+		<br/>
+
+		<input type="submit" class="btn-info" value="predict">
+
+	</form>
+
+	</div>
+
+
+
+
+</body>
+</html>
+
+
+<!--<!DOCTYPE html>-->
+<!--<html >-->
+<!--<head>-->
+<!--  <meta charset="UTF-8">-->
+<!--  <title>Text Generation App</title>-->
+<!--  <link href='https://fonts.googleapis.com/css?family=Pacifico' rel='stylesheet' type='text/css'>-->
+<!--<link href='https://fonts.googleapis.com/css?family=Arimo' rel='stylesheet' type='text/css'>-->
+<!--<link href='https://fonts.googleapis.com/css?family=Hind:300' rel='stylesheet' type='text/css'>-->
+<!--<link href='https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300' rel='stylesheet' type='text/css'>-->
+<!--<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">-->
+
+<!--</head>-->
+
+<!--<body style="background: #000;">-->
+<!-- <div class="login">-->
+<!--	<h1>Text Generation</h1>-->
+
+<!--     &lt;!&ndash; Main Input For Receiving Query to our ML &ndash;&gt;-->
+<!--    <form action="{{ url_for('predict')}}"method="post">-->
+<!--    	<input type="text" name="rate" placeholder="rate" required="required" />-->
+<!--        <input type="text" name="Input type" placeholder="Input type" required="required" />-->
+
+<!--		<div class="ml-container">-->
+
+<!--            <form action="{{ url_for('predict')}}" method="POST">-->
+<!--            <p>Enter Your Message Here</p>-->
+<!--            &lt;!&ndash; <input type="text" name="comment"/> &ndash;&gt;-->
+<!--            <textarea name="message" rows="4" cols="50"></textarea>-->
+<!--            <br/>-->
+
+<!--            <input type="submit" class="btn-info" value="predict">-->
+
+<!--            </form>-->
+
+<!--        </div>-->
+
+<!--        <button type="submit" class="btn btn-primary btn-block btn-large">Generate text!</button>-->
+<!--    </form>-->
+
+<!--   <br>-->
+<!--   <br>-->
+<!--   {{ prediction_text }}-->
+
+<!-- </div>-->
+
+
+<!--</body>-->
+<!--</html>-->
