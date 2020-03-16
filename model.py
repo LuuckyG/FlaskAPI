@@ -14,6 +14,7 @@ def build_model(num_cells,
                 vocab_size, 
                 train_len, 
                 dropout=0.3,
+                activation='relu',
                 optimizer='adam',
                 loss='categorical_crossentropy',
                 metrics=['accuracy']):
@@ -26,13 +27,13 @@ def build_model(num_cells,
 
     for n in range(rnn_layers):
         if n != (rnn_layers - 1):
-            model.add(LSTM(num_cells), return_sequences=True)
+            model.add(LSTM(num_cells, return_sequences=True))
             model.add(Dropout(dropout))
         else:
             # Last LSTM layer
             model.add(LSTM(num_cells))
     
-    model.add(Dense(num_cells), activation=activation)
+    model.add(Dense(num_cells, activation=activation))
     model.add(Dropout(dropout))
     model.add(Dense(vocab_size + 1, activation='softmax'))
 

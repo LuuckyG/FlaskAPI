@@ -1,19 +1,49 @@
 import os
 import time
+import math
+import pickle
 import numpy as np
+import pandas as pd
 import tensorflow as tf
 
 from pathlib import Path
-from tensorflow.keras.callbacks import TensorBoard
+from datetime import datetime
+from pickle import load, dump
 
-path_to_file = tf.keras.utils.get_file('shakespeare.txt', 'https://storage.googleapis.com/download.tensorflow.org/data/shakespeare.txt')
+# Neural Net Preprocessing
+from sklearn.externals import joblib
+from sklearn.model_selection import train_test_split
+from sklearn.feature_extraction.text import CountVectorizer
+from tensorflow.keras.preprocessing.text import Tokenizer
+from tensorflow.keras.utils import to_categorical
+from tensorflow.keras.preprocessing.sequence import pad_sequences
 
-# Read, then decode for py2 compat.
-text = open(path_to_file, 'rb').read().decode(encoding='cp1252')
+# Neural Net Layers
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense
+from tensorflow.keras.layers import Dropout
+from tensorflow.keras.layers import LSTM
+from tensorflow.keras.layers import Embedding
 
-# The unique characters in the file
+# Neural Net Training
+from tensorflow.keras.models import load_model
+from tensorflow.keras.callbacks import ModelCheckpoint, CSVLogger, TensorBoard
+from keras.callbacks import EarlyStopping
+
+from model import build_model, generate_text
+
+# Import the data
+testing = False
+
+if testing:
+    path_to_file = tf.keras.utils.get_file('shakespeare.txt', 'https://storage.googleapis.com/download.tensorflow.org/data/shakespeare.txt')
+    text = open(path_to_file, 'rb').read().decode(encoding='cp1252')
+else:
+    dataset = pd.read_excel("database.xlsx")
+    subject = 'AANLEIDING'
+    text = dataset[dataset['Zwaartepunt'] == 'Programmatuur'][subject].values
+
 vocab = sorted(set(text))
-print ('{} unique characters'.format(len(vocab)))
 
 # Creating a mapping from unique characters to indices
 char2idx = {u:i for i, u in enumerate(vocab)}
@@ -21,218 +51,110 @@ idx2char = np.array(vocab)
 
 text_as_int = np.array([char2idx[c] for c in text])
 
-# The maximum length sentence we want for a single input in characters
-seq_length = 100
-examples_per_epoch = len(text)//(seq_length+1)
+max_words = 50000  # Max size of the dictionary
+tokenizer = Tokenizer(num_words=max_words)
+tokenizer.fit_on_texts(text)
+sequences = tokenizer.texts_to_sequences(text)
+print(sequences[:5])
 
-# Create training examples / targets
-char_dataset = tf.data.Dataset.from_tensor_slices(text_as_int)
+# Flatten the list of lists resulting from the tokenization. This will reduce the list
+# to one dimension, allowing us to apply the sliding window technique to predict the next word
+text = [item for sublist in sequences for item in sublist]
+vocab_size = len(tokenizer.word_index)
 
-for i in char_dataset.take(5):
-    print(idx2char[i.numpy()])
+print('Vocabulary size in this corpus: ', vocab_size)
 
-sequences = char_dataset.batch(seq_length+1, drop_remainder=True)
+# Training on 19 words to predict the 20th
+sentence_len = 20
+pred_len = 1
+train_len = sentence_len - pred_len
+seq = []
 
-def split_input_target(chunk):
-    input_text = chunk[:-1]
-    target_text = chunk[1:]
-    return input_text, target_text
+# Sliding window to generate train data
+for i in range(len(text) - sentence_len):
+    seq.append(text[i:i + sentence_len])
 
-dataset = sequences.map(split_input_target)
+# Reverse dictionary to decode tokenized sequences back to words
+reverse_word_map = dict(map(reversed, tokenizer.word_index.items()))
 
-# Batch size
-BATCH_SIZE = 64
+# Each row in seq is a 20 word long window. We append he first 19 words as the input to predict the 20th word
+X = []
+y = []
+for i in seq:
+    X.append(i[:train_len])
+    y.append(i[-1])
 
-# Buffer size to shuffle the dataset
-# (TF data is designed to work with possibly infinite sequences,
-# so it doesn't attempt to shuffle the entire sequence in memory. Instead,
-# it maintains a buffer in which it shuffles elements).
-BUFFER_SIZE = 10000
+y = to_categorical(y)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=101)
 
-dataset = dataset.shuffle(BUFFER_SIZE).batch(BATCH_SIZE, drop_remainder=True)
+X_val = np.asarray(X_train[-int(len(X_train) * 0.2):])  # Get last 20% of training data for validation
+y_val =  np.asarray(y_train[-int(len(y_train) * 0.2):])
+X_train =  np.asarray(X_train[:-int(len(X_train) * 0.2)])
+y_train =  np.asarray(y_train[:-int(len(y_train) * 0.2)])
+X_test =  np.asarray(X_test)
+y_test =  np.asarray(y_test)
 
-# Length of the vocabulary in chars
-vocab_size = len(vocab)
-
-# The embedding dimension
-embedding_dim = 256
-
-# Number of RNN units
-rnn_units = 1024
-
-class TextGenModel(tf.keras.Sequential):
-    def __init__(self, 
-                vocab_size, 
-                embedding_dim, 
-                rnn_units, 
-                batch_size,
-                name='text_gen_model',
-                **kwargs):
-
-        super(TextGenModel, self).__init__(name=name, **kwargs)
-        self.embedding = tf.keras.layers.Embedding(vocab_size, 
-                                                   embedding_dim, 
-                                                   batch_input_shape=[batch_size, None])
-        self.gru = tf.keras.layers.GRU(rnn_units, 
-                                       return_sequences=True,
-                                       stateful=True,
-                                       recurrent_initializer='glorot_uniform')
-        self.dense = tf.keras.layers.Dense(vocab_size)
-        
-    def call(self, inputs):
-        x = self.embedding(inputs)
-        x = self.gru(x)
-        output = self.dense(x)
-        return output
+# Hyperparameters
+learning_rate = 0.003
+loss_type = 'ce'
+loss = 'categorical_crossentropy'
+metrics = ['accuracy']
+optimizer = 'adam'
+dropout=0.3
+num_cells = 256
+rnn_layers = 3
+activation='relu'
 
 
-def build_model(vocab_size, embedding_dim, rnn_units, batch_size):
-  model = tf.keras.Sequential([
-    tf.keras.layers.Embedding(vocab_size, embedding_dim,
-                              batch_input_shape=[batch_size, None]),
-    tf.keras.layers.GRU(rnn_units,
-                        return_sequences=True,
-                        stateful=True,
-                        recurrent_initializer='glorot_uniform'),
-    tf.keras.layers.Dense(vocab_size)
-  ])
-  return model
+# define model
+model = build_model(num_cells=num_cells, 
+                    rnn_layers=rnn_layers, 
+                    vocab_size=vocab_size, 
+                    train_len=train_len, 
+                    dropout=dropout,
+                    activation=activation,
+                    optimizer=optimizer,
+                    loss=loss,
+                    metrics=metrics)
 
 
-model = build_model(vocab_size = len(vocab),
-                    embedding_dim=embedding_dim,
-                    rnn_units=rnn_units,
-                    batch_size=BATCH_SIZE)
 
-for input_example_batch, target_example_batch in dataset.take(1):
-    example_batch_predictions = model(input_example_batch)
-    print(example_batch_predictions.shape, "# (batch_size, sequence_length, vocab_size)")
+time_now = datetime.now()
+results_path = Path('./results')
+results_directory = results_path / ''.join(loss_type + '_lr_' + str(learning_rate) + '_t_' + time_now.strftime('%H-%M'))
+results_directory.mkdir(exist_ok=True, parents=True)
 
-sampled_indices = tf.random.categorical(example_batch_predictions[0], num_samples=1)
-sampled_indices = tf.squeeze(sampled_indices,axis=-1).numpy()
-
-print("Input: \n", repr("".join(idx2char[input_example_batch[0]])))
-print()
-print("Next Char Predictions: \n", repr("".join(idx2char[sampled_indices ])))
-
-def loss(labels, logits):
-    return tf.keras.losses.sparse_categorical_crossentropy(labels, logits, from_logits=True)
-
-example_batch_loss  = loss(target_example_batch, example_batch_predictions)
-print("Prediction shape: ", example_batch_predictions.shape, " # (batch_size, sequence_length, vocab_size)")
-print("scalar_loss:      ", example_batch_loss.numpy().mean())
-
-model.compile(optimizer='adam', loss=loss)
-
-# Directory where the checkpoints will be saved
-checkpoint_dir = './training_checkpoints'
-# checkpoint_dir.mkdir(exist_ok=True, parents=True)
-
-# Name of the checkpoint files
-checkpoint_prefix = os.path.join(checkpoint_dir, "ckpt_{epoch}")
-
-checkpoint_callback=tf.keras.callbacks.ModelCheckpoint(
-    filepath=checkpoint_prefix,
-    save_best_only=True,
-    save_weights_only=False)
+checkpoint = ModelCheckpoint(str(results_directory) + "/weights.hdf5", monitor='val_' + loss, 
+                             verbose=1, save_best_only=True, save_weights_only=False, mode='min', period=1)
+callbacks_list = [checkpoint]
  
 # Tensorboard logger.
-tensorboard = TensorBoard(log_dir=checkpoint_dir, write_graph=True, write_grads=False, write_images=True)
+tensorboard = TensorBoard(log_dir=results_directory, write_graph=True, write_grads=False, write_images=True)
 
-EPOCHS = 10
-history = model.fit(dataset, epochs=EPOCHS, callbacks=[checkpoint_callback])
-
-# ## To train with different batch size, use the following:
-# tf.train.latest_checkpoint(checkpoint_dir)
-
-# model = build_model(vocab_size, embedding_dim, rnn_units, batch_size=1)
-# model.load_weights(tf.train.latest_checkpoint(checkpoint_dir))
-# model.build(tf.TensorShape([1, None]))
-# model.summary()
-
-def generate_text(model, start_string):
-    # Evaluation step (generating text using the learned model)
-
-    # Number of characters to generate
-    num_generate = 1000
-
-    # Converting our start string to numbers (vectorizing)
-    input_eval = [char2idx[s] for s in start_string]
-    input_eval = tf.expand_dims(input_eval, 0)
-
-    # Empty string to store our results
-    text_generated = []
-
-    # Low temperatures results in more predictable text.
-    # Higher temperatures results in more surprising text.
-    # Experiment to find the best setting.
-    temperature = 1.0
-
-    # Here batch size == 1
-    model.reset_states()
-    for i in range(num_generate):
-        predictions = model(input_eval)
-        # remove the batch dimension
-        predictions = tf.squeeze(predictions, 0)
-
-        # using a categorical distribution to predict the character returned by the model
-        predictions = predictions / temperature
-        predicted_id = tf.random.categorical(predictions, num_samples=1)[-1,0].numpy()
-
-        # We pass the predicted character as the next input to the model
-        # along with the previous hidden state
-        input_eval = tf.expand_dims([predicted_id], 0)
-
-        text_generated.append(idx2char[predicted_id])
-
-    return (start_string + ''.join(text_generated))
-
-print(generate_text(model, start_string=u"Technische: "))
+history = model.fit(X_train,
+                    y_train,
+                    epochs=200,
+                    batch_size=128,
+                    callbacks=callbacks_list,
+                    verbose=1,
+                    validation_data=(X_val, y_val))
 
 
-# ## CUSTOMIZED TRAINING ##
-# model = build_model(
-#     vocab_size = len(vocab),
-#     embedding_dim=embedding_dim,
-#     rnn_units=rnn_units,
-#     batch_size=BATCH_SIZE)
+# # Create a dictionary containing all parameters.
+# parameters['training']['results_directory'] = str(results_directory)
+# parameters['training']['checkpoint_metric'] = repr(checkpoint_metric)
+# parameters['training']['checkpoint_mode'] = repr(checkpoint_mode)
+# parameters['training']['metrics'] = repr(metrics)
 
-# optimizer = tf.keras.optimizers.Adam()
+# with open(str(results_directory / 'parameters.json'), 'w') as json_file:
+#     json.dump(parameters, fp=json_file, indent=4)
 
-# @tf.function
-# def train_step(inp, target):
-#     with tf.GradientTape() as tape: 
-#         predictions = model(inp)
-#         loss = tf.reduce_mean(
-#             tf.keras.losses.sparse_categorical_crossentropy(
-#                 target, predictions, from_logits=True))
-#     grads = tape.gradient(loss, model.trainable_variables)
-#     optimizer.apply_gradients(zip(grads, model.trainable_variables))
+# Save tokenizer
+pickle.dump(tokenizer, open(results_directory / 'tokenizer.pkl', 'wb'))
+joblib.dump(model, str(results_directory) + '/{}_model.pkl'.format(subject))
+model.save(str(results_directory / 'final_model.h5'))
 
-#     return loss
-
-# # Training step
-# EPOCHS = 10
-
-# for epoch in range(EPOCHS):
-#   start = time.time()
-
-#   # initializing the hidden state at the start of every epoch
-#   # initally hidden is None
-#   hidden = model.reset_states()
-
-#     for (batch_n, (inp, target)) in enumerate(dataset):
-#         loss = train_step(inp, target)
-
-#         if batch_n % 100 == 0:
-#             template = 'Epoch {} Batch {} Loss {}'
-#             print(template.format(epoch+1, batch_n, loss))
-
-#     # saving (checkpoint) the model every 5 epochs
-#     if (epoch + 1) % 5 == 0:
-#         model.save_weights(checkpoint_prefix.format(epoch=epoch))
-
-#     print ('Epoch {} Loss {:.4f}'.format(epoch+1, loss))
-#     print ('Time taken for 1 epoch {} sec\n'.format(time.time() - start))
-
-model.save_weights(checkpoint_prefix.format(epoch=epoch))
+# Generate text
+test_string = 'De aanvrager'
+sequence_length = 15
+generate_text(model=model, seq=test_string, max_words=max_words, max_len=sequence_length)
