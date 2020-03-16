@@ -1,9 +1,13 @@
+import os
+import time
 import math
 import pickle
 import numpy as np
 import pandas as pd
 import tensorflow as tf
 
+from pathlib import Path
+from datetime import datetime
 from pickle import load, dump
 
 # Neural Net Preprocessing
@@ -32,8 +36,8 @@ subject = 'AANLEIDING'
 text = dataset[dataset['Zwaartepunt'] == 'Programmatuur'][subject].values
 
 
-path_to_file = tf.keras.utils.get_file('shakespeare.txt', 'https://storage.googleapis.com/download.tensorflow.org/data/shakespeare.txt')
-text = open(path_to_file, 'rb').read().decode(encoding='cp1252')
+# path_to_file = tf.keras.utils.get_file('shakespeare.txt', 'https://storage.googleapis.com/download.tensorflow.org/data/shakespeare.txt')
+# text = open(path_to_file, 'rb').read().decode(encoding='cp1252')
 vocab = sorted(set(text))
 
 # Creating a mapping from unique characters to indices
@@ -85,11 +89,19 @@ y_train =  np.asarray(y_train[:-int(len(y_train) * 0.2)])
 X_test =  np.asarray(X_test)
 y_test =  np.asarray(y_test)
 
+# Hyperparameters
+learning_rate = 0.003
+loss_type = 'categorical_crossentropy'
+metrics = ['accuracy']
+optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
 
 # define model
 model = Sequential([
     Embedding(vocab_size + 1, 25, input_length=train_len),
     LSTM(256, return_sequences=True),
+    Dropout(0.3),
+    LSTM(256, return_sequences=True),
+    Dropout(0.3),
     LSTM(256),
     Dense(256, activation='relu'),
     Dropout(0.3),
@@ -98,17 +110,20 @@ model = Sequential([
 
 model.summary()
 
-model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=0.003),
-              loss='categorical_crossentropy',
-              metrics=['accuracy'])
+model.compile(optimizer=optimizer,
+              loss=loss_type,
+              metrics=metrics)
 
-filepath = "./model_2_weights.hdf5"
+time_now = datetime.now()
+results_path = Path('./results')
+results_directory = results_directory = results_path / ''.join(optimizer_type + '_' + loss_type + '_' + str(learning_rate) + '_' + time_now.strftime('%H-%M'))
+results_directory.mkdir(exist_ok=True, parents=True)
 
-checkpoint = ModelCheckpoint(filepath, monitor='loss', verbose=1, save_best_only=False, mode='min')
+checkpoint = ModelCheckpoint(results_path / ''.join("model_2_weights.hdf5"), monitor='loss', verbose=1, save_best_only=False, mode='min')
 callbacks_list = [checkpoint]
  
 # Tensorboard logger.
-   tensorboard = TensorBoard(log_dir=results_directory, write_graph=True, write_grads=False, write_images=True)
+tensorboard = TensorBoard(log_dir=results_directory, write_graph=True, write_grads=False, write_images=True)
 
 history = model.fit(X_train,
                     y_train,
@@ -119,9 +134,9 @@ history = model.fit(X_train,
                     validation_data=(X_val, y_val))
 
 # Save tokenizer
-pickle.dump(tokenizer, open('tokenizer.pkl', 'wb'))
-joblib.dump(model, '{}_model.pkl'.format(subject))
-model.save('model_weights.hdf5')
+pickle.dump(tokenizer, open('{}/tokenizer.pkl'.format(results_directory), 'wb'))
+joblib.dump(model, '{}/{}_model.pkl'.format(results_directory, subject))
+model.save('{}/model_weights.hdf5'.format(results_directory))
 
 
 def gen(model, seq, max_len=20):
