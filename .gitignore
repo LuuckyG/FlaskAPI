@@ -1,0 +1,6 @@
+database.xlsx
+results/
+__pycache__/
+.idea/
+.vscode/settings.json
+.vscode
