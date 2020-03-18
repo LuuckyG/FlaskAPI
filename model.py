@@ -1,3 +1,5 @@
+from tensorflow.keras import optimizers
+
 from tensorflow.keras.models import Sequential
 
 from tensorflow.keras.layers import Dense
@@ -15,9 +17,10 @@ def build_model(num_cells,
                 train_len, 
                 dropout=0.3,
                 activation='relu',
-                optimizer='adam',
+                optimizer=optimizers.Adam(),
                 loss='categorical_crossentropy',
-                metrics=['accuracy']):
+                metrics=['accuracy'],
+                **kwargs):
 
     """Function to build and return a recurrent LSTM-based model"""
 
@@ -41,6 +44,9 @@ def build_model(num_cells,
     model.summary()
 
     # Build model
+    if not isinstance(metrics, list):
+        metrics = [metrics]
+
     model.compile(optimizer=optimizer,
                   loss=loss,
                   metrics=metrics)
@@ -48,7 +54,7 @@ def build_model(num_cells,
     return model
 
 
-def generate_text(model, seq, max_words=50000, max_len=20):
+def generate_text(model, seq, max_words=50000, max_len=20, **kwargs):
     """ Generates a sequence given a string seq using specified model until the total sequence length
     reaches max_len"""
     # Tokenize the input string
