@@ -1,6 +1,5 @@
 import json
-
-from pickle import load, dump
+import pickle
 
 from tensorflow.keras.callbacks import CSVLogger
 from tensorflow.keras.callbacks import TensorBoard
@@ -42,7 +41,7 @@ def save_config(model, tokenizer, cfg, reverse_word_map, results_directory):
         json_file.write(model_json)
     
     # Save tokenizer and model
-    with open(results_directory / 'tokenizer.pickle', 'wb') as handle:
+    with open(results_directory / 'tokenizer.pkl', 'wb') as handle:
         pickle.dump(tokenizer, handle, protocol=pickle.HIGHEST_PROTOCOL)
     
     model.save(str(results_directory / 'final_model.h5'))

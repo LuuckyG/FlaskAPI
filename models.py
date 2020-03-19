@@ -57,8 +57,9 @@ def build_model(num_cells,
 def generate_text(model, 
                   tokenizer, 
                   inputs, 
-                  reverse_word_map, 
-                  max_len=20, 
+                  reverse_word_map,
+                  train_len=20,
+                  max_len=100, 
                   **kwargs):
     """ 
     Generates a sequence given a string seq using specified model until the total sequence length
@@ -69,6 +70,7 @@ def generate_text(model,
         tokenizer: Tokenizer object
         inputs: Input text for the model to start prediction on.
         reverse_word_map: Reverse dictionary to decode tokenized sequences back to words
+        train_len: Lenght of sentence used to train the model
         max_len: Number of words of generated text.
 
     Returns:
@@ -76,6 +78,7 @@ def generate_text(model,
     """
     
     # Tokenize the input string
+    print(inputs)
     tokenized_sent = tokenizer.texts_to_sequences([inputs])
     max_len = max_len + len(tokenized_sent[0])
 
@@ -83,7 +86,7 @@ def generate_text(model,
     # the array input shape is correct going into our LSTM. 
     while len(tokenized_sent[0]) < max_len:
         # Pad on left of sentence
-        padded_sentence = pad_sequences(tokenized_sent[-(max_len-1):], maxlen=maxlen-1)
+        padded_sentence = pad_sequences(tokenized_sent[-train_len:], maxlen=train_len)
         op = model.predict(np.asarray(padded_sentence).reshape(1, -1))
         tokenized_sent[0].append(op.argmax() + 1)
 

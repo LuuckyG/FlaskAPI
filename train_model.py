@@ -1,9 +1,9 @@
 import json
+import pickle
 import numpy as np
 import pandas as pd
 import tensorflow as tf
 
-from pickle import load
 from pathlib import Path
 from datetime import datetime
 
@@ -25,7 +25,7 @@ from tensorflow.keras.layers import Embedding
 from tensorflow.keras import optimizers
 
 from hparams import HParams
-from model import build_model, generate_text
+from models import build_model, generate_text
 from utils.logging import checkpoint_log, save_config
 
 
@@ -159,7 +159,7 @@ if __name__ == "__main__":
                                  tokenizer=tokenizer,
                                  inputs=parameters.input_string,
                                  reverse_word_map=config['reverse_word_map'],
-                                 max_words=parameters.max_words, 
+                                 train_len=config['sentence_length'] - 1,
                                  max_len=parameters.sequence_length
                                  )
         

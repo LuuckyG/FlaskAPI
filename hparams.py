@@ -19,6 +19,7 @@ class HParams:
 
         # Required arguments
         arg_parser.add_argument('--results_path', type=Path,
+                                # default='C:/Users/luukg/Documents/01_Evolvalor/FlaskAPI/results',
                                 default='./results',
                                 help="Folder where the model results are saved.")
         arg_parser.add_argument('--path_to_file', type=Path,
