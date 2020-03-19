@@ -25,7 +25,7 @@ from tensorflow.keras.layers import Embedding
 from tensorflow.keras import optimizers
 
 from hparams import HParams
-from models import build_model, generate_text
+from .models import build_model, generate_text
 from utils.logging import checkpoint_log, save_config
 
 
