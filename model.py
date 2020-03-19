@@ -42,10 +42,8 @@ def build_model(num_cells,
     model.add(Dropout(dropout))
     model.add(Dense(vocab_size + 1, activation='softmax'))
 
-    # Print summary
     model.summary()
 
-    # Build model
     if not isinstance(metrics, list):
         metrics = [metrics]
 
@@ -56,19 +54,36 @@ def build_model(num_cells,
     return model
 
 
-def generate_text(model, seq, reverse_word_map, max_words=50000, max_len=20, **kwargs):
-    """ Generates a sequence given a string seq using specified model until the total sequence length
-    reaches max_len"""
+def generate_text(model, 
+                  tokenizer, 
+                  inputs, 
+                  reverse_word_map, 
+                  max_len=20, 
+                  **kwargs):
+    """ 
+    Generates a sequence given a string seq using specified model until the total sequence length
+    reaches max_len
+
+    Args:
+        model: A pre-trained tensorflow.keras model
+        tokenizer: Tokenizer object
+        inputs: Input text for the model to start prediction on.
+        reverse_word_map: Reverse dictionary to decode tokenized sequences back to words
+        max_len: Number of words of generated text.
+
+    Returns:
+        A generated text.
+    """
+    
     # Tokenize the input string
-    tokenizer = Tokenizer(num_words=max_words)
-    tokenized_sent = tokenizer.texts_to_sequences([seq])
+    tokenized_sent = tokenizer.texts_to_sequences([inputs])
     max_len = max_len + len(tokenized_sent[0])
 
     # If sentence is not as long as the desired sentence length, we need to 'pad sequence' so that
-    # the array input shape is correct going into our LSTM. the `pad_sequences` function adds
-    # zeroes to the left side of our sequence until it becomes 19 long, the number of input features.
+    # the array input shape is correct going into our LSTM. 
     while len(tokenized_sent[0]) < max_len:
-        padded_sentence = pad_sequences(tokenized_sent[-19:], maxlen=19)
+        # Pad on left of sentence
+        padded_sentence = pad_sequences(tokenized_sent[-(max_len-1):], maxlen=maxlen-1)
         op = model.predict(np.asarray(padded_sentence).reshape(1, -1))
         tokenized_sent[0].append(op.argmax() + 1)
 

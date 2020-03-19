@@ -1,22 +1,17 @@
-import os
 import json
-import time
-import math
-import pickle
 import numpy as np
 import pandas as pd
 import tensorflow as tf
 
+from pickle import load
 from pathlib import Path
 from datetime import datetime
-from pickle import load, dump
 
 # Neural Net Preprocessing
-from sklearn.externals import joblib
 from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import CountVectorizer
-from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.utils import to_categorical
+from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 
 # Neural Net Layers
@@ -28,12 +23,10 @@ from tensorflow.keras.layers import Embedding
 
 # Neural Net Training
 from tensorflow.keras import optimizers
-from tensorflow.keras.models import load_model
-from tensorflow.keras.callbacks import ModelCheckpoint, CSVLogger, TensorBoard
-from tensorflow.keras.callbacks import EarlyStopping
 
-from model import build_model, generate_text
 from hparams import HParams
+from model import build_model, generate_text
+from utils.logging import checkpoint_log, save_config
 
 
 def train_model(results_path: Path, path_to_file: str, cfg: dict):
@@ -68,6 +61,9 @@ def train_model(results_path: Path, path_to_file: str, cfg: dict):
     sequences = tokenizer.texts_to_sequences(inputs)
     print(sequences[:5])
 
+    # Reverse dictionary to decode tokenized sequences back to words
+    reverse_word_map = dict(map(reversed, tokenizer.word_index.items()))
+
     # Flatten the list of lists resulting from the tokenization. This will reduce the list
     # to one dimension, allowing us to apply the sliding window technique to predict the next word
     text = [item for sublist in sequences for item in sublist]
@@ -84,9 +80,6 @@ def train_model(results_path: Path, path_to_file: str, cfg: dict):
     # Sliding window to generate train data
     for i in range(len(text) - sentence_len):
         seq.append(text[i:i + sentence_len])
-
-    # Reverse dictionary to decode tokenized sequences back to words
-    reverse_word_map = dict(map(reversed, tokenizer.word_index.items()))
 
     # Each row in seq is a 20 word long window. We append he first 19 words as the input to predict the 20th word
     X = []
@@ -117,7 +110,6 @@ def train_model(results_path: Path, path_to_file: str, cfg: dict):
 
     if cfg['loss_type'] == 'ce':
         loss = 'categorical_crossentropy'
-        checkpoint_metric = 'val_' + loss
     else:
         raise TypeError("Unrecognized loss type.")
 
@@ -138,19 +130,7 @@ def train_model(results_path: Path, path_to_file: str, cfg: dict):
                         + str(cfg['learning_rate']) + '_' + time_now.strftime('%H-%M'))
     results_directory.mkdir(exist_ok=True, parents=True)
 
-    model_early_stop_filename = results_directory / 'model_checkpoint.h5'
-    checkpoint_metric = 'val_' + loss
-    checkpoint_mode = 'min'
-    checkpoint = ModelCheckpoint(str(model_early_stop_filename), monitor=checkpoint_metric, 
-                                verbose=1, save_best_only=True, save_weights_only=False, mode=checkpoint_mode, period=1)
-    
-    # Model logger.
-    csv_logger = CSVLogger(str(results_directory / 'training.log'))
-
-    # Tensorboard logger.
-    tensorboard = TensorBoard(log_dir=results_directory, write_graph=True, write_grads=False, write_images=True)
-
-    callbacks_list = [checkpoint, csv_logger, tensorboard]
+    callbacks_list = checkpoint_log(results_directory, loss)
 
     # Train model
     history = model.fit(X_train,
@@ -161,27 +141,7 @@ def train_model(results_path: Path, path_to_file: str, cfg: dict):
                         verbose=1,
                         validation_data=(X_val, y_val))    
 
-    # Save training configuration
-    cfg['results_directory'] = str(results_directory)
-    cfg['results_path'] = str(cfg['results_path'])
-    cfg['path_to_file'] = str(cfg['path_to_file'])
-    cfg['model_path'] = str(cfg['model_path'])
-    cfg['checkpoint_metric'] = repr(checkpoint_metric)
-    cfg['checkpoint_mode'] = repr(checkpoint_mode)
-    cfg['reverse_word_map'] = reverse_word_map
-
-    with open(str(results_directory / 'config.json'), 'w') as json_file:
-        json.dump(cfg, fp=json_file, indent=4)
-
-    # Serialize model to JSON
-    model_json = model.to_json()
-    with open(str(results_directory / 'model.json'), 'w') as json_file:
-        json_file.write(model_json)
-    
-    # Save model
-    pickle.dump(tokenizer, open(results_directory / 'tokenizer.pkl', 'wb'))
-    model.save(str(results_directory / 'final_model.h5'))
-
+    cfg = save_config(model, tokenizer, cfg, reverse_word_map, results_directory)
     return model, cfg
 
 if __name__ == "__main__":
@@ -192,9 +152,13 @@ if __name__ == "__main__":
                                 cfg=parameters.__dict__)
     
     if parameters.generate:
-        gen_text = generate_text(model=model, 
-                                 seq=parameters.input_string,
-                                 reverse_word_map = config['reverse_word_map'],
+        with open(config['tokenizer_path'], 'rb') as handle:
+            tokenizer = pickle.load(handle)
+
+        gen_text = generate_text(model=model,
+                                 tokenizer=tokenizer,
+                                 inputs=parameters.input_string,
+                                 reverse_word_map=config['reverse_word_map'],
                                  max_words=parameters.max_words, 
                                  max_len=parameters.sequence_length
                                  )
