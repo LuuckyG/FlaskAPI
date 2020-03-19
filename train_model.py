@@ -135,7 +135,7 @@ def train_model(results_path: Path, path_to_file: str, cfg: dict):
     # Set up saving folder
     time_now = datetime.now()
     results_directory = results_path / ''.join(cfg['loss_type'] + '_lr_' 
-                        + str(cfg['learning_rate']) + '_t_' + time_now.strftime('%H-%M'))
+                        + str(cfg['learning_rate']) + '_' + time_now.strftime('%H-%M'))
     results_directory.mkdir(exist_ok=True, parents=True)
 
     model_early_stop_filename = results_directory / 'model_checkpoint.h5'
@@ -168,6 +168,7 @@ def train_model(results_path: Path, path_to_file: str, cfg: dict):
     cfg['model_path'] = str(cfg['model_path'])
     cfg['checkpoint_metric'] = repr(checkpoint_metric)
     cfg['checkpoint_mode'] = repr(checkpoint_mode)
+    cfg['reverse_word_map'] = reverse_word_map
 
     with open(str(results_directory / 'config.json'), 'w') as json_file:
         json.dump(cfg, fp=json_file, indent=4)
@@ -181,18 +182,22 @@ def train_model(results_path: Path, path_to_file: str, cfg: dict):
     pickle.dump(tokenizer, open(results_directory / 'tokenizer.pkl', 'wb'))
     model.save(str(results_directory / 'final_model.h5'))
 
-    return model
-
+    return model, cfg
 
 if __name__ == "__main__":
     parameters = HParams().args
 
-    model = train_model(results_path=parameters.results_path,
-                        path_to_file=parameters.path_to_file,
-                        cfg=parameters.__dict__)
+    model, config = train_model(results_path=parameters.results_path,
+                                path_to_file=parameters.path_to_file,
+                                cfg=parameters.__dict__)
     
     if parameters.generate:
-        generate_text(model=model, 
-                      seq=parameters.input_string,
-                      max_words=parameters.max_words, 
-                      max_len=parameters.sequence_length)
+        gen_text = generate_text(model=model, 
+                                 seq=parameters.input_string,
+                                 reverse_word_map = config['reverse_word_map'],
+                                 max_words=parameters.max_words, 
+                                 max_len=parameters.sequence_length
+                                 )
+        
+        with open(config['results_directory'] + '/gen_text.txt', 'w') as f:
+            f.write(gen_text)

@@ -1,3 +1,5 @@
+import numpy as np 
+
 from tensorflow.keras import optimizers
 
 from tensorflow.keras.models import Sequential
@@ -54,7 +56,7 @@ def build_model(num_cells,
     return model
 
 
-def generate_text(model, seq, max_words=50000, max_len=20, **kwargs):
+def generate_text(model, seq, reverse_word_map, max_words=50000, max_len=20, **kwargs):
     """ Generates a sequence given a string seq using specified model until the total sequence length
     reaches max_len"""
     # Tokenize the input string
