@@ -78,7 +78,8 @@ class HParams:
                                 help="The length of the sentence (in words) used for training.")
         arg_parser.add_argument('--sequence_length', type=int, default=100,
                                 help="The length of the sentence generated.")
-        arg_parser.add_argument('--input_string', '--inp', type=str, default='De aanvrager ',
+        arg_parser.add_argument('--input_string', '--inp', type=str, 
+                                default='De aanvrager wil een nieuw platform ontwikkelen dat ervoor zorgt dat er meer geld verdiend wordt.',
                                 help="Provide input string for the model to predict the next words.")
         arg_parser.add_argument('--pre_trained', action='store_true',
                                 help="Select to generate text with pre-trained model or not (default).")

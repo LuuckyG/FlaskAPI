@@ -118,9 +118,6 @@ def train_model(results_path: Path, path_to_file: str, cfg: dict):
                         verbose=1,
                         validation_data=(X_val, y_val))    
 
-    # for key in history.history:
-    #     print(key)
-
     cfg = save_config(model, tokenizer, cfg, reverse_word_map, results_directory)
     return model, cfg
 
