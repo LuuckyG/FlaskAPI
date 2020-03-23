@@ -76,34 +76,6 @@ def train_model(results_path: Path, path_to_file: str, cfg: dict):
     # Create training data
     X_train, X_val, y_train, y_val = split_data(text, vocab_size, cfg)
 
-    # # Training on n-1 words to predict the nth
-    # sentence_len = cfg['sentence_length']
-    # train_len = sentence_len - 1
-    # seq = []
-
-    # # Sliding window to generate train data
-    # for i in range(len(text) - sentence_len):
-    #     seq.append(text[i:i + sentence_len])
-
-    # # Each row in seq is a 20 word long window. We append he first 19 words as the input to predict the 20th word
-    # X = []
-    # y = []
-    # for i in seq:
-    #     X.append(i[:train_len])
-    #     y.append(i[-1])
-
-    # y = to_categorical(y)
-    # X_train, X_test, y_train, y_test = train_test_split(X, y, 
-    #                                                     test_size=cfg['test_size'], 
-    #                                                     random_state=np.random.RandomState(cfg['seed']))
-
-    # X_val = np.asarray(X_train[-int(len(X_train) * 0.2):])  # Get last 20% of training data for validation
-    # y_val =  np.asarray(y_train[-int(len(y_train) * 0.2):])
-    # X_train =  np.asarray(X_train[:-int(len(X_train) * 0.2)])
-    # y_train =  np.asarray(y_train[:-int(len(y_train) * 0.2)])
-    # X_test =  np.asarray(X_test)
-    # y_test =  np.asarray(y_test)
-
     # Model parameters.
     if cfg['optimizer'] == 'adam':
         optimizer = optimizers.Adam(learning_rate=cfg['learning_rate'])
@@ -128,12 +100,13 @@ def train_model(results_path: Path, path_to_file: str, cfg: dict):
                         loss=loss,
                         metrics=cfg['metrics'])
 
-    # Set up saving folder
+    # Set up results folder
     time_now = datetime.now()
     results_directory = results_path / ''.join(cfg['loss_type'] + '_lr_' 
                         + str(cfg['learning_rate']) + '_' + time_now.strftime('%H-%M'))
     results_directory.mkdir(exist_ok=True, parents=True)
 
+    # Callback list contains ModelCheckpoint, CSVlogger and Tensorboard
     callbacks_list = checkpoint_log(results_directory, loss)
 
     # Train model
@@ -144,6 +117,9 @@ def train_model(results_path: Path, path_to_file: str, cfg: dict):
                         callbacks=callbacks_list,
                         verbose=1,
                         validation_data=(X_val, y_val))    
+
+    # for key in history.history:
+    #     print(key)
 
     cfg = save_config(model, tokenizer, cfg, reverse_word_map, results_directory)
     return model, cfg
