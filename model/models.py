@@ -77,8 +77,7 @@ def generate_text(model,
         A generated text.
     """
     
-    # Tokenize the input string
-    print(inputs)
+    # Tokenize the input string)
     tokenized_sent = tokenizer.texts_to_sequences([inputs])
     max_len = max_len + len(tokenized_sent[0])
 
