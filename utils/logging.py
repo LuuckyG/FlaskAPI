@@ -9,7 +9,7 @@ from tensorflow.keras.callbacks import ModelCheckpoint
 
 def checkpoint_log(results_directory, loss):
     model_early_stop_filename = results_directory / 'model_checkpoint.h5'
-    checkpoint_metric = 'val_' + loss
+    checkpoint_metric = 'val_loss'
     checkpoint_mode = 'min'
 
     # Model checkpoint.

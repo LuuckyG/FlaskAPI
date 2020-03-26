@@ -77,10 +77,15 @@ def generate_text(model,
         A generated text.
     """
     
+    gen_text = ''
+
     # Tokenize the input string
-    print(inputs)
     tokenized_sent = tokenizer.texts_to_sequences([inputs])
     max_len = max_len + len(tokenized_sent[0])
+
+    # If input is too long, just add beginning of input directly to output
+    if len(tokenized_sent[0]) > train_len:
+        gen_text += " ".join(inputs.split()[:-train_len])
 
     # If sentence is not as long as the desired sentence length, we need to 'pad sequence' so that
     # the array input shape is correct going into our LSTM. 
@@ -90,4 +95,6 @@ def generate_text(model,
         op = model.predict(np.asarray(padded_sentence).reshape(1, -1))
         tokenized_sent[0].append(op.argmax() + 1)
 
-    return " ".join(map(lambda x: reverse_word_map[x], tokenized_sent[0]))
+    gen_text += " ".join(map(lambda x: reverse_word_map[str(x)], tokenized_sent[0]))
+
+    return gen_text
