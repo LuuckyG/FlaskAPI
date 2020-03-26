@@ -95,6 +95,6 @@ def generate_text(model,
         op = model.predict(np.asarray(padded_sentence).reshape(1, -1))
         tokenized_sent[0].append(op.argmax() + 1)
 
-    gen_text += " ".join(map(lambda x: reverse_word_map[x], tokenized_sent[0]))
+    gen_text += " ".join(map(lambda x: reverse_word_map[str(x)], tokenized_sent[0]))
 
     return gen_text

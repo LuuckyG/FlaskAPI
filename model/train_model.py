@@ -56,8 +56,8 @@ def train_model(results_path: Path, path_to_file: str, cfg: dict):
     sequences = tokenizer.texts_to_sequences(inputs)
     
     # Reverse dictionary to decode tokenized sequences back to words
-    reverse_word_map = dict(map(reversed, tokenizer.word_index.items()))
-    
+    reverse_word_map = {str(k): v for k, v in map(reversed, tokenizer.word_index.items())}
+
     # Flatten the list of lists resulting from the tokenization. This will reduce the list
     # to one dimension, allowing us to apply the sliding window technique to predict the next word
     text = [item for sublist in sequences for item in sublist]
