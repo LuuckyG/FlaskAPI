@@ -116,7 +116,7 @@ def train_model(results_path: Path, path_to_file: str, cfg: dict):
                         batch_size=cfg['batch_size'],
                         callbacks=callbacks_list,
                         verbose=2,
-                        validation_data=(X_val, y_val))    
+                        validation_data=(X_val, y_val))
 
     cfg = save_config(model, tokenizer, cfg, reverse_word_map, results_directory)
     return model, cfg
