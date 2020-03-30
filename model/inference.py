@@ -19,7 +19,6 @@ def get_parser():
     arg_parser.add_argument('--model_path', '--mp', type=Path,
                             default='C:/Users/luukg/Documents/01_Evolvalor/FlaskAPI/results/test',
                             help="Path to pretrained model (hdf5 format).")
-                            # C:/Users/luukg/Documents/01_Evolvalor/FlaskAPI/results/test
     arg_parser.add_argument('--results_path', '--rp', type=Path,
                             default='C:/Users/luukg/Documents/01_Evolvalor/FlaskAPI/results/test',
                             help="Folder where the generated text should be saved to.")
