@@ -25,7 +25,7 @@ from tensorflow.keras.layers import Embedding
 from tensorflow.keras import optimizers
 
 from hparams import HParams
-from .models import build_model, generate_text
+from .models import build_simple_model, generate_text
 from utils.preprocess import split_data
 from utils.logging import checkpoint_log, save_config
 
@@ -90,15 +90,15 @@ def train_model(results_path: Path, path_to_file: str, cfg: dict):
         raise TypeError("Unrecognized loss type.")
 
     # define model
-    model = build_model(num_cells=cfg['num_cells'], 
-                        rnn_layers=cfg['rnn_layers'], 
-                        vocab_size=vocab_size, 
-                        train_len=cfg['sentence_length'] - 1, 
-                        dropout=cfg['dropout'],
-                        activation=cfg['activation'],
-                        optimizer=optimizer,
-                        loss=loss,
-                        metrics=cfg['metrics'])
+    model = build_simple_model(num_cells=cfg['num_cells'], 
+                               rnn_layers=cfg['rnn_layers'], 
+                               vocab_size=vocab_size, 
+                               train_len=cfg['sentence_length'] - 1, 
+                               dropout=cfg['dropout'],
+                               activation=cfg['activation'],
+                               optimizer=optimizer,
+                               loss=loss,
+                               metrics=cfg['metrics'])
 
     # Set up results folder
     time_now = datetime.now()

@@ -13,16 +13,16 @@ from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 
 
-def build_model(num_cells, 
-                rnn_layers, 
-                vocab_size, 
-                train_len, 
-                dropout=0.3,
-                activation='relu',
-                optimizer=optimizers.Adam(),
-                loss='categorical_crossentropy',
-                metrics=['accuracy'],
-                **kwargs):
+def build_simple_model(num_cells, 
+                       rnn_layers, 
+                       vocab_size, 
+                       train_len, 
+                       dropout=0.3,
+                       activation='relu',
+                       optimizer=optimizers.Adam(),
+                       loss='categorical_crossentropy',
+                       metrics=['accuracy'],
+                       **kwargs):
 
     """Function to build and return a recurrent LSTM-based model"""
 
