@@ -56,12 +56,22 @@ def inference(model_path, results_path, inputs, max_len):
     with open(model_path / 'tokenizer.pkl', 'rb') as f:
         tokenizer = pickle.load(f)
         
-    return generate_text(model=model, 
-                         tokenizer=tokenizer, 
-                         inputs=inputs, 
-                         reverse_word_map=config['reverse_word_map'], 
-                         train_len=config['sentence_length'] - 1, 
-                         max_len=max_len)
+    return generate_text(
+            model=model, 
+            tokenizer=tokenizer, 
+            inputs=inputs, 
+            reverse_word_map=config['reverse_word_map'], 
+            train_len=config['sentence_length'] - 1, 
+            max_len=max_len)
+
+from textgenrnn import textgenrnn
+textgen = textgenrnn(
+    weights_path='colaboratory_weights.hdf5',
+    vocab_path='colaboratory_vocab.json',
+    config_path='colaboratory_config.json')
+ 
+textgen.generate_samples(max_gen_length=1000)
+textgen.generate_to_file('textgenrnn_texts.txt', max_gen_length=1000)
 
 
 if __name__ == "__main__":
