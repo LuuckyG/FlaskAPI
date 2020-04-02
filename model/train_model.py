@@ -90,15 +90,54 @@ def train_model(results_path: Path, path_to_file: str, cfg: dict):
         raise TypeError("Unrecognized loss type.")
 
     # define model
-    model = build_simple_model(num_cells=cfg['num_cells'], 
-                               rnn_layers=cfg['rnn_layers'], 
-                               vocab_size=vocab_size, 
-                               train_len=cfg['sentence_length'] - 1, 
-                               dropout=cfg['dropout'],
-                               activation=cfg['activation'],
-                               optimizer=optimizer,
-                               loss=loss,
-                               metrics=cfg['metrics'])
+    model = build_simple_model(
+                num_cells=cfg['num_cells'], 
+                rnn_layers=cfg['rnn_layers'], 
+                vocab_size=vocab_size, 
+                train_len=cfg['sentence_length'] - 1, 
+                dropout=cfg['dropout'],
+                activation=cfg['activation'],
+                optimizer=optimizer,
+                loss=loss,
+                metrics=cfg['metrics'])
+
+    if text_genrnn:
+        textgen = textgenrnn(name=model_name)
+
+        train_function = textgen.train_from_file if train_cfg['line_delimited'] else textgen.train_from_largetext_file
+
+        train_function(
+            file_path=file_name,
+            new_model=True,
+            num_epochs=train_cfg['num_epochs'],
+            gen_epochs=train_cfg['gen_epochs'],
+            batch_size=train_cfg['batch_size'],
+            train_size=train_cfg['train_size'],
+            dropout=train_cfg['dropout'],
+            validation=train_cfg['validation'],
+            is_csv=train_cfg['is_csv'],
+            rnn_layers=model_cfg['rnn_layers'],
+            rnn_size=model_cfg['rnn_size'],
+            rnn_bidirectional=model_cfg['rnn_bidirectional'],
+            max_length=model_cfg['max_length'],
+            dim_embeddings=100,
+            word_level=model_cfg['word_level'])
+
+        if train_cfg['line_delimited']:
+            n = 1000
+            max_gen_length = 60 if model_cfg['word_level'] else 300
+        else:
+            n = 1
+            max_gen_length = 2000 if model_cfg['word_level'] else 1000
+            
+            timestring = datetime.now().strftime('%Y%m%d_%H%M%S')
+            gen_file = '{}_gentext_{}.txt'.format(model_name, timestring)
+
+            textgen.generate_to_file(gen_file,
+                                    temperature=temperature,
+                                    prefix=prefix,
+                                    n=n,
+                                    max_gen_length=max_gen_length)
 
     # Set up results folder
     time_now = datetime.now()
@@ -121,6 +160,99 @@ def train_model(results_path: Path, path_to_file: str, cfg: dict):
     cfg = save_config(model, tokenizer, cfg, reverse_word_map, results_directory)
     return model, cfg
 
+
+#####################################
+# Original name = model_training.py
+
+  
+import numpy as np
+
+from tensorflow.keras.callbacks import LearningRateScheduler, Callback
+from tensorflow.keras.models import Model, load_model
+from tensorflow.keras.preprocessing import sequence
+from tensorflow.keras.preprocessing.text import Tokenizer, text_to_word_sequence
+from tensorflow.keras.utils import Sequence
+from tensorflow.keras import backend as K
+
+from .utils import textgenrnn_encode_cat
+
+
+def generate_sequences_from_texts(texts, indices_list,
+                                  textgenrnn, context_labels,
+                                  batch_size=128):
+    is_words = textgenrnn.config['word_level']
+    is_single = textgenrnn.config['single_text']
+    max_length = textgenrnn.config['max_length']
+    meta_token = textgenrnn.META_TOKEN
+
+    if is_words:
+        new_tokenizer = Tokenizer(filters='', char_level=True)
+        new_tokenizer.word_index = textgenrnn.vocab
+    else:
+        new_tokenizer = textgenrnn.tokenizer
+
+    while True:
+        np.random.shuffle(indices_list)
+
+        X_batch = []
+        Y_batch = []
+        context_batch = []
+        count_batch = 0
+
+        for row in range(indices_list.shape[0]):
+            text_index = indices_list[row, 0]
+            end_index = indices_list[row, 1]
+
+            text = texts[text_index]
+
+            if not is_single:
+                text = [meta_token] + list(text) + [meta_token]
+
+            if end_index > max_length:
+                x = text[end_index - max_length: end_index + 1]
+            else:
+                x = text[0: end_index + 1]
+            y = text[end_index + 1]
+
+            if y in textgenrnn.vocab:
+                x = process_sequence([x], textgenrnn, new_tokenizer)
+                y = textgenrnn_encode_cat([y], textgenrnn.vocab)
+
+                X_batch.append(x)
+                Y_batch.append(y)
+
+                if context_labels is not None:
+                    context_batch.append(context_labels[text_index])
+
+                count_batch += 1
+
+                if count_batch % batch_size == 0:
+                    X_batch = np.squeeze(np.array(X_batch))
+                    Y_batch = np.squeeze(np.array(Y_batch))
+                    context_batch = np.squeeze(np.array(context_batch))
+
+                    # print(X_batch.shape)
+
+                    if context_labels is not None:
+                        yield ([X_batch, context_batch], [Y_batch, Y_batch])
+                    else:
+                        yield (X_batch, Y_batch)
+                    X_batch = []
+                    Y_batch = []
+                    context_batch = []
+                    count_batch = 0
+
+
+def process_sequence(X, textgenrnn, new_tokenizer):
+    X = new_tokenizer.texts_to_sequences(X)
+    X = sequence.pad_sequences(
+        X, maxlen=textgenrnn.config['max_length'])
+
+    return X
+
+
+
+#################################
 
 if __name__ == "__main__":
     parameters = HParams().args
