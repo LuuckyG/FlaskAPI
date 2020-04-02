@@ -5,8 +5,7 @@ import argparse
 from pathlib import Path
 from tensorflow.keras.models import load_model
 
-from .models import generate_text
-from hparams import HParams
+from models import generate_text
 
 
 def float_input(s):
@@ -18,11 +17,13 @@ def get_parser():
 
     # Required parameters
     arg_parser.add_argument('--model_path', '--mp', type=Path,
+                            default='C:/Users/luukg/Documents/01_Evolvalor/FlaskAPI/results/test',
                             help="Path to pretrained model (hdf5 format).")
-                            # C:/Users/luukg/Documents/01_Evolvalor/FlaskAPI/results/test
     arg_parser.add_argument('--results_path', '--rp', type=Path,
+                            default='C:/Users/luukg/Documents/01_Evolvalor/FlaskAPI/results/test',
                             help="Folder where the generated text should be saved to.")
     arg_parser.add_argument('--inputs', '--i', nargs='+', type=str,
+                            default='Hallo , dit is een test',
                             help="Provide input string for the model to predict the next words.")
 
     # Optional parameters
@@ -57,7 +58,7 @@ def inference(model_path, results_path, inputs, max_len):
         
     return generate_text(model=model, 
                          tokenizer=tokenizer, 
-                         inputs=' '.join(inputs), 
+                         inputs=inputs, 
                          reverse_word_map=config['reverse_word_map'], 
                          train_len=config['sentence_length'] - 1, 
                          max_len=max_len)
