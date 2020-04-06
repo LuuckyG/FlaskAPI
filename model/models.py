@@ -15,7 +15,7 @@ from tensorflow.keras.preprocessing.sequence import pad_sequences
 from .AttentionWeightedAverage import AttentionWeightedAverage
 
 
-def build_simple_model(num_cells, 
+def build_simple_model(rnn_size, 
                        rnn_layers, 
                        vocab_size, 
                        train_len, 
@@ -35,13 +35,13 @@ def build_simple_model(num_cells,
 
     for n in range(rnn_layers):
         if n != (rnn_layers - 1):
-            model.add(LSTM(num_cells, return_sequences=True))
+            model.add(LSTM(rnn_size, return_sequences=True))
             model.add(Dropout(dropout))
         else:
             # Last LSTM layer
-            model.add(LSTM(num_cells))
+            model.add(LSTM(rnn_size))
     
-    model.add(Dense(num_cells, activation=activation))
+    model.add(Dense(rnn_size, activation=activation))
     model.add(Dropout(dropout))
     model.add(Dense(vocab_size + 1, activation='softmax'))
 

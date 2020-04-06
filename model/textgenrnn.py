@@ -23,7 +23,7 @@ from keras.backend.tensorflow_backend import set_session
 
 from pkg_resources import resource_filename
 from .models import textgenrnn_model
-from .train_model import *
+from .inference import *
 from .utils import *
 
 
