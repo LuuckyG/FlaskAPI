@@ -22,8 +22,8 @@ from sklearn.metrics.pairwise import cosine_similarity
 from keras.backend.tensorflow_backend import set_session
 
 from pkg_resources import resource_filename
-from .model import textgenrnn_model
-from .model_training import *
+from .models import textgenrnn_model
+from .train_model import *
 from .utils import *
 
 

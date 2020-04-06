@@ -60,7 +60,7 @@ def textgenrnn_generate(model, vocab,
                         stop_tokens=[' ', '\n']):
     '''
     Generates and returns a single text.
-    '''
+    """
 
     collapse_char = ' ' if word_level else ''
     end = False
@@ -175,10 +175,10 @@ def textgenrnn_generate(model, vocab,
 
 
 def textgenrnn_encode_sequence(text, vocab, maxlen):
-    '''
+    """
     Encodes a text into the corresponding encoding for prediction with
     the model.
-    '''
+    """
 
     encoded = np.array([vocab.get(x, 0) for x in text])
     return sequence.pad_sequences([encoded], maxlen=maxlen)
@@ -186,9 +186,9 @@ def textgenrnn_encode_sequence(text, vocab, maxlen):
 
 def textgenrnn_texts_from_file(file_path, header=True,
                                delim='\n', is_csv=False):
-    '''
+    """
     Retrieves texts from a newline-delimited file and returns as a list.
-    '''
+    """
 
     with open(file_path, 'r', encoding='utf8', errors='ignore') as f:
         if header:
@@ -206,9 +206,9 @@ def textgenrnn_texts_from_file(file_path, header=True,
 
 
 def textgenrnn_texts_from_file_context(file_path, header=True):
-    '''
+    """
     Retrieves texts+context from a two-column CSV.
-    '''
+    """
 
     with open(file_path, 'r', encoding='utf8', errors='ignore') as f:
         if header:
@@ -225,10 +225,10 @@ def textgenrnn_texts_from_file_context(file_path, header=True):
 
 
 def textgenrnn_encode_cat(chars, vocab):
-    '''
+    """
     One-hot encodes values at given chars efficiently by preallocating
     a zeros matrix.
-    '''
+    """
 
     a = np.float32(np.zeros((len(chars), len(vocab) + 1)))
     rows, cols = zip(*[(i, vocab.get(char, 0))

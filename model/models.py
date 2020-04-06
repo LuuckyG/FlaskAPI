@@ -1,16 +1,18 @@
 import numpy as np 
 
-from tensorflow.keras import optimizers
+from tensorflow import config as config
+from tensorflow.keras import backend as K
+from tensorflow.keras.optimizers import Adam
+from tensorflow.keras.models import Model, Sequential
 
-from tensorflow.keras.models import Sequential
-
-from tensorflow.keras.layers import Dense
-from tensorflow.keras.layers import Dropout
-from tensorflow.keras.layers import LSTM
-from tensorflow.keras.layers import Embedding
+from tensorflow.keras.layers import LSTM, Bidirectional
+from tensorflow.keras.layers import Input, Dense, Dropout, Embedding
+from tensorflow.keras.layers import concatenate, Reshape, SpatialDropout1D
 
 from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.preprocessing.sequence import pad_sequences
+
+from .AttentionWeightedAverage import AttentionWeightedAverage
 
 
 def build_simple_model(num_cells, 
@@ -19,12 +21,13 @@ def build_simple_model(num_cells,
                        train_len, 
                        dropout=0.3,
                        activation='relu',
-                       optimizer=optimizers.Adam(),
+                       optimizer=Adam(),
                        loss='categorical_crossentropy',
                        metrics=['accuracy'],
                        **kwargs):
-
-    """Function to build and return a recurrent LSTM-based model"""
+    """
+    Function to build and return a recurrent LSTM-based model
+    """
 
     # Define model
     model = Sequential()
@@ -92,23 +95,14 @@ def generate_text(model,
     return " ".join(map(lambda x: reverse_word_map[str(x)], tokenized_sent[0]))
 
 
-from tensorflow.keras.optimizers import Adam
-from tensorflow.keras.layers import Input, Embedding, Dense, LSTM, Bidirectional
-from tensorflow.keras.layers import concatenate, Reshape, SpatialDropout1D
-from tensorflow.keras.models import Model
-from tensorflow.keras import backend as K
-from tensorflow import config as config
-from .AttentionWeightedAverage import AttentionWeightedAverage
-
-
 def textgenrnn_model(num_classes, cfg, context_size=None,
                      weights_path=None,
                      dropout=0.0,
                      optimizer=Adam(lr=4e-3)):
-    '''
+    """
     Builds the model architecture for textgenrnn and
     loads the specified weights for the model.
-    '''
+    """
 
     input = Input(shape=(cfg['max_length'],), name='input')
     embedded = Embedding(num_classes, cfg['dim_embeddings'],
@@ -152,21 +146,21 @@ def textgenrnn_model(num_classes, cfg, context_size=None,
     return model
 
 
-'''
+"""
 Create a new LSTM layer per parameters. Unfortunately,
 each combination of parameters must be hardcoded.
 The normal LSTMs use sigmoid recurrent activations
 for parity with CuDNNLSTM:
 https://github.com/keras-team/keras/issues/8860
-'''
+"""
 
-'''
+"""
 FIXME
 From TensorFlow 2 you do not need to specify CuDNNLSTM.
 You can just use LSTM with no activation function and it will
 automatically use the CuDNN version.
 This part can probably be cleaned up.
-'''
+"""
 
 
 def new_rnn(cfg, layer_num):

@@ -8,11 +8,12 @@ from pathlib import Path
 from datetime import datetime
 
 # Neural Net Preprocessing
+from tensorflow.keras import backend as K
 from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import CountVectorizer
-from tensorflow.keras.utils import to_categorical
-from tensorflow.keras.preprocessing.text import Tokenizer
-from tensorflow.keras.preprocessing.sequence import pad_sequences
+from tensorflow.keras.utils import Sequence, to_categorical
+from tensorflow.keras.preprocessing.text import Tokenizer, text_to_word_sequence
+from tensorflow.keras.preprocessing import sequence
 
 # Neural Net Layers
 from tensorflow.keras.models import Sequential
@@ -23,23 +24,27 @@ from tensorflow.keras.layers import Embedding
 
 # Neural Net Training
 from tensorflow.keras import optimizers
+from tensorflow.keras.models import Model, load_model
+from tensorflow.keras.callbacks import LearningRateScheduler, Callback
 
+# Own scripts
 from hparams import HParams
 from .models import build_simple_model, generate_text
 from utils.preprocess import split_data
 from utils.logging import checkpoint_log, save_config
+from .utils import textgenrnn_encode_cat
 
 
 def train_model(results_path: Path, path_to_file: str, cfg: dict):
     """
-        Function to train a LSTM model for text generation.
-        Args:
-            results_path: Folder where subfolder with results of training and model are saved.
-            path_to_file: Path to where input data is located.
-            cfg: Dictionary with all hyperparameter, model and text generation settings are stored.
-        
-        Returns:
-            model: Trained model.
+    Function to train a LSTM model for text generation.
+    Args:
+        results_path: Folder where subfolder with results of training and model are saved.
+        path_to_file: Path to where input data is located.
+        cfg: Dictionary with all hyperparameter, model and text generation settings are stored.
+    
+    Returns:
+        model: Trained model.
     """
 
     # Import data
@@ -102,6 +107,27 @@ def train_model(results_path: Path, path_to_file: str, cfg: dict):
                 metrics=cfg['metrics'])
 
     if text_genrnn:
+
+        model_cfg = {
+        'word_level': False,   # set to True if want to train a word-level model (requires more data and smaller max_length)
+        'rnn_size': 256,   # number of LSTM cells of each layer (128/256 recommended)
+        'rnn_layers': 2,   # number of LSTM layers (>=2 recommended)
+        'rnn_bidirectional': True,   # consider text both forwards and backward, can give a training boost
+        'max_length': 30,   # number of tokens to consider before predicting the next (20-40 for characters, 5-10 for words recommended)
+        'max_words': 10000,   # maximum number of words to model; the rest will be ignored (word-level model only)
+        }
+
+        train_cfg = {
+            'line_delimited': False,   # set to True if each text has its own line in the source file
+            'num_epochs': 50,   # set higher to train the model for longer
+            'gen_epochs': 5,   # generates sample text from model after given number of epochs
+            'train_size': 0.8,   # proportion of input data to train on: setting < 1.0 limits model from learning perfectly
+            'dropout': 0.2,   # ignore a random proportion of source tokens each epoch, allowing model to generalize better
+            'validation': True,   # If train__size < 1.0, test on holdout dataset; will make overall training slower
+            'is_csv': False,   # set to True if file is a CSV exported from Excel/BigQuery/pandas
+            'batch_size': 1024  # Size of mini batches, default = 512
+        }
+
         textgen = textgenrnn(name=model_name)
 
         train_function = textgen.train_from_file if train_cfg['line_delimited'] else textgen.train_from_largetext_file
