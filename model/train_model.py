@@ -107,7 +107,9 @@ def train_model(results_path: Path, path_to_file: str, cfg: dict):
                 metrics=cfg['metrics'])
 
     if text_genrnn:
-
+        # Original code from Max Woolf (Github: Minimaxir):
+        # https://github.com/minimaxir/textgenrnn
+        
         model_cfg = {
         'word_level': False,   # set to True if want to train a word-level model (requires more data and smaller max_length)
         'rnn_size': 256,   # number of LSTM cells of each layer (128/256 recommended)
