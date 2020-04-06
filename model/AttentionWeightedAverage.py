@@ -8,6 +8,9 @@ class AttentionWeightedAverage(Layer):
     Computes a weighted average of the different channels across timesteps.
     Uses 1 parameter pr. channel to compute the attention value for
     a single timestep.
+
+    Original code from Max Woolf (Github: Minimaxir):
+    https://github.com/minimaxir/textgenrnn
     """
 
     def __init__(self, return_attention=False, **kwargs):

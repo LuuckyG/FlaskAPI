@@ -15,12 +15,14 @@ from tensorflow.keras.callbacks import LearningRateScheduler, Callback
 from tensorflow.keras.preprocessing import sequence
 from tensorflow.keras.preprocessing.text import Tokenizer, text_to_word_sequence
 
+# Original code from Max Woolf (Github: Minimaxir):
+# https://github.com/minimaxir/textgenrnn
 
 def textgenrnn_sample(preds, temperature, interactive=False, top_n=3):
-    '''
+    """
     Samples predicted probabilities of the next character to allow
     for the network to show "creativity."
-    '''
+    """
 
     preds = np.asarray(preds).astype('float64')
 
@@ -58,7 +60,7 @@ def textgenrnn_generate(model, vocab,
                         prefix=None,
                         synthesize=False,
                         stop_tokens=[' ', '\n']):
-    '''
+    """
     Generates and returns a single text.
     """
 
@@ -240,7 +242,8 @@ def textgenrnn_encode_cat(chars, vocab):
 def synthesize(textgens, n=1, return_as_list=False, prefix='',
                temperature=[1.0, 0.5, 0.2], max_gen_length=300,
                progress=True, stop_tokens=[' ', '\n']):
-    """Synthesizes texts using an ensemble of input models.
+    """
+    Synthesizes texts using an ensemble of input models.
     """
 
     gen_texts = []

@@ -28,6 +28,9 @@ from .utils import *
 
 
 class textgenrnn:
+    # Original code from Max Woolf (Github: Minimaxir):
+    # https://github.com/minimaxir/textgenrnn
+
     META_TOKEN = '<s>'
     config = {
         'rnn_layers': 2,

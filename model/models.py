@@ -102,6 +102,9 @@ def textgenrnn_model(num_classes, cfg, context_size=None,
     """
     Builds the model architecture for textgenrnn and
     loads the specified weights for the model.
+
+    Original code from Max Woolf (Github: Minimaxir):
+    https://github.com/minimaxir/textgenrnn
     """
 
     input = Input(shape=(cfg['max_length'],), name='input')

@@ -190,19 +190,6 @@ def train_model(results_path: Path, path_to_file: str, cfg: dict):
 #####################################
 # Original name = model_training.py
 
-  
-import numpy as np
-
-from tensorflow.keras.callbacks import LearningRateScheduler, Callback
-from tensorflow.keras.models import Model, load_model
-from tensorflow.keras.preprocessing import sequence
-from tensorflow.keras.preprocessing.text import Tokenizer, text_to_word_sequence
-from tensorflow.keras.utils import Sequence
-from tensorflow.keras import backend as K
-
-from .utils import textgenrnn_encode_cat
-
-
 def generate_sequences_from_texts(texts, indices_list,
                                   textgenrnn, context_labels,
                                   batch_size=128):
