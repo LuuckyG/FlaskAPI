@@ -190,6 +190,8 @@ def train_model(results_path: Path, path_to_file: str, cfg: dict):
 #####################################
 # Original name = model_training.py
 
+# Original code from Max Woolf (Github: Minimaxir):
+# https://github.com/minimaxir/textgenrnn
 def generate_sequences_from_texts(texts, indices_list,
                                   textgenrnn, context_labels,
                                   batch_size=128):
