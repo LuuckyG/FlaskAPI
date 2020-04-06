@@ -33,6 +33,7 @@ from .models import build_simple_model, generate_text
 from utils.preprocess import split_data
 from utils.logging import checkpoint_log, save_config
 from .utils import textgenrnn_encode_cat
+from .textgenrnn import textgenrnn
 
 
 def train_model(results_path: Path, path_to_file: str, cfg: dict):
@@ -107,12 +108,12 @@ def train_model(results_path: Path, path_to_file: str, cfg: dict):
         # Original code from Max Woolf (Github: Minimaxir):
         # https://github.com/minimaxir/textgenrnn
 
-        model = textgenrnn(name=cfg['model_name'])
+        model = textgenrnn(name=str(results_directory))
 
         train_function = model.train_from_file if cfg['line_delimited'] else model.train_from_largetext_file
 
         train_function(
-            file_path=path_to_file,
+            file_path='aanleiding.txt',
             new_model=True,
             num_epochs=cfg['epochs'],
             gen_epochs=cfg['gen_epochs'],
@@ -135,8 +136,7 @@ def train_model(results_path: Path, path_to_file: str, cfg: dict):
             n = 1
             max_gen_length = 2000 if cfg['word_level'] else 1000
             
-        timestring = datetime.now().strftime('%Y%m%d_%H%M%S')
-        gen_file = '{}_gentext_{}.txt'.format(cfg['model_name'], timestring)
+        gen_file = '{}/gentext.txt'.format(results_directory)
         temperature =[float(t) for t in cfg['temperature'].split(',')]
 
         model.generate_to_file(gen_file,
@@ -167,7 +167,8 @@ def train_model(results_path: Path, path_to_file: str, cfg: dict):
                             verbose=2,
                             validation_data=(X_val, y_val))
 
-    cfg = save_config(model, tokenizer, cfg, reverse_word_map, results_directory)           # Wont work yet with textgenrnn
+        cfg = save_config(model, tokenizer, cfg, reverse_word_map, results_directory)           # Wont work yet with textgenrnn
+
     return model, cfg
 
 

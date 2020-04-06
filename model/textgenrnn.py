@@ -19,12 +19,83 @@ from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
 from sklearn.metrics.pairwise import cosine_similarity
 
-from keras.backend.tensorflow_backend import set_session
+# from keras.backend.tensorflow_backend import set_session
+from tensorflow.compat.v1.keras.backend import set_session
 
 from pkg_resources import resource_filename
 from .models import textgenrnn_model
-from .inference import *
 from .utils import *
+
+
+def generate_sequences_from_texts(texts, indices_list,
+                                  textgenrnn, context_labels,
+                                  batch_size=128):
+    is_words = textgenrnn.config['word_level']
+    is_single = textgenrnn.config['single_text']
+    max_length = textgenrnn.config['max_length']
+    meta_token = textgenrnn.META_TOKEN
+
+    if is_words:
+        new_tokenizer = Tokenizer(filters='', char_level=True)
+        new_tokenizer.word_index = textgenrnn.vocab
+    else:
+        new_tokenizer = textgenrnn.tokenizer
+
+    while True:
+        np.random.shuffle(indices_list)
+
+        X_batch = []
+        Y_batch = []
+        context_batch = []
+        count_batch = 0
+
+        for row in range(indices_list.shape[0]):
+            text_index = indices_list[row, 0]
+            end_index = indices_list[row, 1]
+
+            text = texts[text_index]
+
+            if not is_single:
+                text = [meta_token] + list(text) + [meta_token]
+
+            if end_index > max_length:
+                x = text[end_index - max_length: end_index + 1]
+            else:
+                x = text[0: end_index + 1]
+            y = text[end_index + 1]
+
+            if y in textgenrnn.vocab:
+                x = process_sequence([x], textgenrnn, new_tokenizer)
+                y = textgenrnn_encode_cat([y], textgenrnn.vocab)
+
+                X_batch.append(x)
+                Y_batch.append(y)
+
+                if context_labels is not None:
+                    context_batch.append(context_labels[text_index])
+
+                count_batch += 1
+
+                if count_batch % batch_size == 0:
+                    X_batch = np.squeeze(np.array(X_batch))
+                    Y_batch = np.squeeze(np.array(Y_batch))
+                    context_batch = np.squeeze(np.array(context_batch))
+
+                    if context_labels is not None:
+                        yield ([X_batch, context_batch], [Y_batch, Y_batch])
+                    else:
+                        yield (X_batch, Y_batch)
+                    X_batch = []
+                    Y_batch = []
+                    context_batch = []
+                    count_batch = 0
+
+
+def process_sequence(X, textgenrnn, new_tokenizer):
+    X = new_tokenizer.texts_to_sequences(X)
+    X = sequence.pad_sequences(
+        X, maxlen=textgenrnn.config['max_length'])
+    return X
 
 
 class textgenrnn:
@@ -50,38 +121,38 @@ class textgenrnn:
                  name="textgenrnn",
                  allow_growth=None):
 
-        if weights_path is None:
-            weights_path = resource_filename(__name__,
-                                             'textgenrnn_weights.hdf5')
+        # if weights_path is None:
+        #     weights_path = resource_filename(__name__,
+        #                                      'textgenrnn_weights.hdf5')
 
-        if vocab_path is None:
-            vocab_path = resource_filename(__name__,
-                                           'textgenrnn_vocab.json')
+        # if vocab_path is None:
+        #     vocab_path = resource_filename(__name__,
+        #                                    'textgenrnn_vocab.json')
 
-        if allow_growth is not None:
-            c = tf.ConfigProto()
-            c.gpu_options.allow_growth = True
-            set_session(tf.Session(config=c))
+        # if allow_growth is not None:
+        #     c = tf.ConfigProto()
+        #     c.gpu_options.allow_growth = True
+        #     set_session(tf.Session(config=c))
 
-        if config_path is not None:
-            with open(config_path, 'r',
-                      encoding='utf8', errors='ignore') as json_file:
-                self.config = json.load(json_file)
+        # if config_path is not None:
+        #     with open(config_path, 'r',
+        #               encoding='utf8', errors='ignore') as json_file:
+        #         self.config = json.load(json_file)
 
         self.config.update({'name': name})
         self.default_config.update({'name': name})
 
-        with open(vocab_path, 'r',
-                  encoding='utf8', errors='ignore') as json_file:
-            self.vocab = json.load(json_file)
+        # with open(vocab_path, 'r',
+        #           encoding='utf8', errors='ignore') as json_file:
+        #     self.vocab = json.load(json_file)
 
-        self.tokenizer = Tokenizer(filters='', lower=False, char_level=True)
-        self.tokenizer.word_index = self.vocab
-        self.num_classes = len(self.vocab) + 1
-        self.model = textgenrnn_model(self.num_classes,
-                                      cfg=self.config,
-                                      weights_path=weights_path)
-        self.indices_char = dict((self.vocab[c], c) for c in self.vocab)
+        # self.tokenizer = Tokenizer(filters='', lower=False, char_level=True)
+        # self.tokenizer.word_index = self.vocab
+        # self.num_classes = len(self.vocab) + 1
+        # self.model = textgenrnn_model(self.num_classes,
+        #                               cfg=self.config,
+        #                               weights_path=weights_path)
+        # self.indices_char = dict((self.vocab[c], c) for c in self.vocab)
 
     def generate(self, n=1, return_as_list=False, prefix=None,
                  temperature=[1.0, 0.5, 0.2, 0.2],
@@ -220,7 +291,7 @@ class textgenrnn:
             if new_model:
                 weights_path = None
             else:
-                weights_path = "{}_weights.hdf5".format(self.config['name'])
+                weights_path = "{}/weights.hdf5".format(self.config['name'])
                 self.save(weights_path)
 
             if multi_gpu:
@@ -244,7 +315,7 @@ class textgenrnn:
                 if new_model:
                     weights_path = None
                 else:
-                    weights_path = "{}_weights.hdf5".format(self.config['name'])
+                    weights_path = "{}/weights.hdf5".format(self.config['name'])
 
                 strategy = distribute.MirroredStrategy()
                 with strategy.scope():
@@ -320,11 +391,11 @@ class textgenrnn:
                                       cfg=self.config)
 
         # Save the files needed to recreate the model
-        with open('{}_vocab.json'.format(self.config['name']),
+        with open('{}/vocab.json'.format(self.config['name']),
                   'w', encoding='utf8') as outfile:
             json.dump(self.tokenizer.word_index, outfile, ensure_ascii=False)
 
-        with open('{}_config.json'.format(self.config['name']),
+        with open('{}/config.json'.format(self.config['name']),
                   'w', encoding='utf8') as outfile:
             json.dump(self.config, outfile, ensure_ascii=False)
 

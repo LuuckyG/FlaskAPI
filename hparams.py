@@ -75,8 +75,6 @@ class HParams:
                                     Default: (1.0, 0.5, 0.2).")
 
         # LSTM-Net architecture parameters
-        arg_parser.add_argument('--model_name', type=str, default='textgen_model'
-                                help="Name of model. Default is 'textgen_model'.")
         arg_parser.add_argument('--rnn_layers', '--rnn', type=int, default=3,
                                 help="Number of rnn-based layers.")
         arg_parser.add_argument('--rnn_size', type=int, default=256,
@@ -89,10 +87,6 @@ class HParams:
                                 help="Set to True if want to train a word-level model (requires more data and smaller max_length) (default is false).")
         arg_parser.add_argument('--rnn_bidirectional', action='store_true',
                                 help="Consider text both forwards and backward, can give a training boost (default is false).")
-        arg_parser.add_argument('--epochs', type=int, default=200,
-                                help="Number of epochs to be used for training.")
-        arg_parser.add_argument('--epochs', type=int, default=200,
-                                help="Number of epochs to be used for training.")            
 
         # Text generation parameters
         arg_parser.add_argument('--generate', action='store_true',
