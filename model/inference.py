@@ -6,39 +6,112 @@ from pathlib import Path
 from tensorflow.keras.models import load_model
 
 from models import generate_text
-
-
-def float_input(s):
-    return map(float, s.split(','))
+from textgenrnn import textgenrnn
 
 
 def get_parser():
     arg_parser = argparse.ArgumentParser()
 
     # Required parameters
-    arg_parser.add_argument('--model_path', '--mp', type=Path,
+    arg_parser.add_argument('model_path', 'mp', type=Path,
                             default='C:/Users/luukg/Documents/01_Evolvalor/FlaskAPI/results/test',
                             help="Path to pretrained model (hdf5 format).")
-    arg_parser.add_argument('--results_path', '--rp', type=Path,
+    arg_parser.add_argument('results_path', 'rp', type=Path,
                             default='C:/Users/luukg/Documents/01_Evolvalor/FlaskAPI/results/test',
                             help="Folder where the generated text should be saved to.")
+
+    # Optional parameters
+    arg_parser.add_argument('--text_genrnn', action='store_false',
+                            help="Select to train with text_genrnn model (default) or not.")
     arg_parser.add_argument('--inputs', '--i', nargs='+', type=str,
                             default='Hallo , dit is een test',
                             help="Provide input string for the model to predict the next words.")
-
-    # Optional parameters
     arg_parser.add_argument('--sequence_length', type=int, default=100,
                             help="The length of the sentence generated.")
 
     return arg_parser.parse_args()
 
 
-def inference(model_path, results_path, inputs, max_len):
+# Original code from Max Woolf (Github: Minimaxir):
+# https://github.com/minimaxir/textgenrnn
+def generate_sequences_from_texts(texts, indices_list,
+                                  textgenrnn, context_labels,
+                                  batch_size=128):
+    is_words = textgenrnn.config['word_level']
+    is_single = textgenrnn.config['single_text']
+    max_length = textgenrnn.config['max_length']
+    meta_token = textgenrnn.META_TOKEN
+
+    if is_words:
+        new_tokenizer = Tokenizer(filters='', char_level=True)
+        new_tokenizer.word_index = textgenrnn.vocab
+    else:
+        new_tokenizer = textgenrnn.tokenizer
+
+    while True:
+        np.random.shuffle(indices_list)
+
+        X_batch = []
+        Y_batch = []
+        context_batch = []
+        count_batch = 0
+
+        for row in range(indices_list.shape[0]):
+            text_index = indices_list[row, 0]
+            end_index = indices_list[row, 1]
+
+            text = texts[text_index]
+
+            if not is_single:
+                text = [meta_token] + list(text) + [meta_token]
+
+            if end_index > max_length:
+                x = text[end_index - max_length: end_index + 1]
+            else:
+                x = text[0: end_index + 1]
+            y = text[end_index + 1]
+
+            if y in textgenrnn.vocab:
+                x = process_sequence([x], textgenrnn, new_tokenizer)
+                y = textgenrnn_encode_cat([y], textgenrnn.vocab)
+
+                X_batch.append(x)
+                Y_batch.append(y)
+
+                if context_labels is not None:
+                    context_batch.append(context_labels[text_index])
+
+                count_batch += 1
+
+                if count_batch % batch_size == 0:
+                    X_batch = np.squeeze(np.array(X_batch))
+                    Y_batch = np.squeeze(np.array(Y_batch))
+                    context_batch = np.squeeze(np.array(context_batch))
+
+                    if context_labels is not None:
+                        yield ([X_batch, context_batch], [Y_batch, Y_batch])
+                    else:
+                        yield (X_batch, Y_batch)
+                    X_batch = []
+                    Y_batch = []
+                    context_batch = []
+                    count_batch = 0
+
+
+def process_sequence(X, textgenrnn, new_tokenizer):
+    X = new_tokenizer.texts_to_sequences(X)
+    X = sequence.pad_sequences(
+        X, maxlen=textgenrnn.config['max_length'])
+    return X
+
+
+def inference(text_genrnn, model_path, results_path, inputs, max_len):
     """
     Function to load in pre-trained model and generate text based on inputs.
     The generated text is saved in .txt file.
 
     Args:
+        text_genrnn: Boolean to indicate the model type used for text generation.
         model_path: Path to pretrained model (hdf5 format).
         results_path: Folder where the generated text should be saved to.
         inputs: Provide input string for the model to predict the next words.
@@ -47,41 +120,42 @@ def inference(model_path, results_path, inputs, max_len):
     Returns:
         Generated text.    
     """
-
-    model = load_model(str(model_path / 'final_model.h5'))
-
-    with open(model_path / 'config.json') as cfg:
-        config = json.load(cfg)
-
-    with open(model_path / 'tokenizer.pkl', 'rb') as f:
-        tokenizer = pickle.load(f)
+    if text_genrnn:
+        textgen = textgenrnn(
+            weights_path=str(model_path / 'weights.hdf5'),
+            vocab_path=str(model_path / 'vocab.json'),
+            config_path=str(model_path / 'config.json'))
         
-    return generate_text(
-            model=model, 
-            tokenizer=tokenizer, 
-            inputs=inputs, 
-            reverse_word_map=config['reverse_word_map'], 
-            train_len=config['sentence_length'] - 1, 
-            max_len=max_len)
+        return textgen.generate_samples(max_gen_length=max_len)
 
-from textgenrnn import textgenrnn
-textgen = textgenrnn(
-    weights_path='colaboratory_weights.hdf5',
-    vocab_path='colaboratory_vocab.json',
-    config_path='colaboratory_config.json')
- 
-textgen.generate_samples(max_gen_length=1000)
-textgen.generate_to_file('textgenrnn_texts.txt', max_gen_length=1000)
+    else:
+        model = load_model(str(model_path / 'final_model.h5'))
+
+        with open(model_path / 'config.json') as cfg:
+            config = json.load(cfg)
+
+        with open(model_path / 'tokenizer.pkl', 'rb') as f:
+            tokenizer = pickle.load(f)
+            
+        return generate_text(
+                model=model, 
+                tokenizer=tokenizer, 
+                inputs=inputs, 
+                reverse_word_map=config['reverse_word_map'], 
+                train_len=config['sentence_length'] - 1, 
+                max_len=max_len)
 
 
 if __name__ == "__main__":
     params = get_parser()
 
-    gen_text = inference(model_path=params.model_path,
-                         results_path=params.results_path,
-                         inputs=params.inputs,
-                         max_len=params.sequence_length
-                         )
+    gen_text = inference(
+        text_genrnn=params.text_genrnn,
+        model_path=params.model_path,
+        results_path=params.results_path,
+        inputs=params.inputs,
+        max_len=params.sequence_length
+        )
 
     with open(params.results_path / 'gen_text.txt', 'w') as f:
         f.write(gen_text)
