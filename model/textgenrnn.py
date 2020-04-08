@@ -6,7 +6,7 @@ import h5py
 import numpy as np
 
 import tensorflow as tf
-from tensorflow.keras.callbacks import LearningRateScheduler, Callback
+from tensorflow.keras.callbacks import LearningRateScheduler, Callback, TensorBoard
 from tensorflow.keras.models import Model, load_model
 from tensorflow.keras.preprocessing import sequence
 from tensorflow.keras.preprocessing.text import Tokenizer, text_to_word_sequence
@@ -115,7 +115,7 @@ class textgenrnn:
     }
     default_config = config.copy()
 
-    def __init__(self, weights_path=None,
+    def __init__(self, model_folder, weights_path=None,
                  vocab_path=None,
                  config_path=None,
                  name="textgenrnn",
@@ -139,8 +139,8 @@ class textgenrnn:
         #               encoding='utf8', errors='ignore') as json_file:
         #         self.config = json.load(json_file)
 
-        self.config.update({'name': name})
-        self.default_config.update({'name': name})
+        self.config.update({'name': name, 'results_dir': model_folder})
+        self.default_config.update({'name': name, 'results_dir': model_folder})
 
         # with open(vocab_path, 'r',
         #           encoding='utf8', errors='ignore') as json_file:
@@ -291,7 +291,7 @@ class textgenrnn:
             if new_model:
                 weights_path = None
             else:
-                weights_path = "{}/weights.hdf5".format(self.config['name'])
+                weights_path = "{}/weights.hdf5".format(self.config['results_dir'])
                 self.save(weights_path)
 
             if multi_gpu:
@@ -315,7 +315,7 @@ class textgenrnn:
                 if new_model:
                     weights_path = None
                 else:
-                    weights_path = "{}/weights.hdf5".format(self.config['name'])
+                    weights_path = "{}/weights.hdf5".format(self.config['results_dir'])
 
                 strategy = distribute.MirroredStrategy()
                 with strategy.scope():
@@ -336,6 +336,10 @@ class textgenrnn:
                     callbacks=[
                         LearningRateScheduler(
                             lr_linear_decay),
+                        TensorBoard(log_dir=self.config['results_dir'], 
+                                           write_graph=True, 
+                                           write_grads=False, 
+                                           write_images=True),
                         generate_after_epoch(
                             self, gen_epochs,
                             max_gen_length),
@@ -391,11 +395,11 @@ class textgenrnn:
                                       cfg=self.config)
 
         # Save the files needed to recreate the model
-        with open('{}/vocab.json'.format(self.config['name']),
+        with open('{}/vocab.json'.format(self.config['results_dir']),
                   'w', encoding='utf8') as outfile:
             json.dump(self.tokenizer.word_index, outfile, ensure_ascii=False)
 
-        with open('{}/config.json'.format(self.config['name']),
+        with open('{}/config.json'.format(self.config['results_dir']),
                   'w', encoding='utf8') as outfile:
             json.dump(self.config, outfile, ensure_ascii=False)
 
@@ -422,7 +426,8 @@ class textgenrnn:
 
     def reset(self):
         self.config = self.default_config.copy()
-        self.__init__(name=self.config['name'])
+        self.__init__(model_folder=self.config['results_dir'], 
+                      name=self.config['name'])
 
     def train_from_file(self, file_path, header=True, delim="\n",
                         new_model=False, context=None,
