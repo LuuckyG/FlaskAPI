@@ -36,7 +36,7 @@ class HParams:
         arg_parser.add_argument('--zwaartepunt', '--zw', type=str, default='Programmatuur',
                                 help="Choose one of the following focus areas: "
                                 "'Programmatuur' (default), 'Product', or 'Productieproces'.")
-        arg_parser.add_argument('--text_genrnn', action='store_false',
+        arg_parser.add_argument('--text_genrnn', action='store_true',
                                 help="Select to train with text_genrnn model (default) or not.")
                                 
         # Hyper parameters training
@@ -70,9 +70,9 @@ class HParams:
                                 help="If train__size < 1.0, test on holdout dataset; will make overall training slower (default is true).")
         arg_parser.add_argument('--is_csv', action='store_true',
                                 help="Set to True if file is a CSV exported from Excel/BigQuery/pandas (default is false).")
-        arg_parser.add_argument('--temperature', '--t', nargs='+', type=float, default=(1.0, 0.5, 0.2),
+        arg_parser.add_argument('--temperature', '--t', nargs='+', type=float, default=[1.0, 0.5, 0.2],
                                 help="Samples predicted probabilities of the next character to allow for the network to show 'creativity..'. \
-                                    Default: (1.0, 0.5, 0.2).")
+                                    Default: [1.0, 0.5, 0.2].")
 
         # LSTM-Net architecture parameters
         arg_parser.add_argument('--rnn_layers', '--rnn', type=int, default=3,
