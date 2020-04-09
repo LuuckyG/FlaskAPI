@@ -156,7 +156,7 @@ class textgenrnn:
 
     def generate(self, n=1, return_as_list=False, prefix=None,
                  temperature=[1.0, 0.5, 0.2, 0.2],
-                 max_gen_length=300, interactive=False,
+                 max_gen_length=300,
                  top_n=3, progress=True):
         gen_texts = []
         iterable = trange(n) if progress and n > 1 else range(n)
@@ -171,7 +171,6 @@ class textgenrnn:
                                               self.config.get(
                                                   'single_text', False),
                                               max_gen_length,
-                                              interactive,
                                               top_n,
                                               prefix)
             if not return_as_list:
