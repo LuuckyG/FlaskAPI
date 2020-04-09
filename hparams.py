@@ -36,8 +36,6 @@ class HParams:
         arg_parser.add_argument('--zwaartepunt', '--zw', type=str, default='Programmatuur',
                                 help="Choose one of the following focus areas: "
                                 "'Programmatuur' (default), 'Product', or 'Productieproces'.")
-        arg_parser.add_argument('--text_genrnn', action='store_true',
-                                help="Select to train with text_genrnn model (default) or not.")
                                 
         # Hyper parameters training
         arg_parser.add_argument('--testing', action='store_true',
