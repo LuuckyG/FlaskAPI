@@ -30,9 +30,13 @@ def train_model(results_path: Path, path_to_file: str, cfg: dict):
         texts = dataset[dataset['Zwaartepunt'] == 'Programmatuur'][cfg['subject']].values
 
     # Set up results folder
-    time_now = datetime.now()
-    results_dir = results_path / ''.join(cfg['loss_type'] + '_lr_' 
-                    + str(cfg['learning_rate']) + '_' + time_now.strftime('%H-%M'))
+    time_now = datetime.now()    
+    results_dir = results_path / (('word' if cfg['word_level'] else 'char') 
+                                + ('_bidir_' if cfg['rnn_bidirectional'] else '') 
+                                + '_l' + str(cfg['sentence_length']) 
+                                + '_d' + str(cfg['rnn_layers']) 
+                                + '_w' + str(cfg['rnn_size']) 
+                                + '_' + time_now.strftime('%H-%M'))
     results_dir.mkdir(exist_ok=True, parents=True)
     cfg['results_dir'] = str(results_dir)
 
@@ -73,10 +77,10 @@ if __name__ == "__main__":
     if parameters.generate:
         if config['line_delimited']:
             n = 1000
-            max_gen_length = 60 if config['word_level'] else 300
+            max_gen_length = 60 if config['word_level'] else 1500
         else:
             n = 1
-            max_gen_length = 2000 if config['word_level'] else 1000
+            max_gen_length = 1000 if config['word_level'] else 1500
             
         gen_file = '{}/gen_text.txt'.format(config['results_dir'])
         temperature =[float(t) for t in config['temperature']]
