@@ -1,36 +1,10 @@
-import json
-import pickle
-import numpy as np
 import pandas as pd
 import tensorflow as tf
 
 from pathlib import Path
 from datetime import datetime
 
-# Neural Net Preprocessing
-from tensorflow.keras import backend as K
-from sklearn.model_selection import train_test_split
-from sklearn.feature_extraction.text import CountVectorizer
-from tensorflow.keras.utils import Sequence, to_categorical
-from tensorflow.keras.preprocessing.text import Tokenizer, text_to_word_sequence
-from tensorflow.keras.preprocessing import sequence
-
-# Neural Net Layers
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense
-from tensorflow.keras.layers import Dropout
-from tensorflow.keras.layers import LSTM
-from tensorflow.keras.layers import Embedding
-
-# Neural Net Training
-from tensorflow.keras import optimizers
-from tensorflow.keras.models import Model, load_model
-from tensorflow.keras.callbacks import LearningRateScheduler, Callback
-
-# Own scripts
 from hparams import HParams
-from utils.preprocess import split_data
-from utils.logging import checkpoint_log, save_config
 from .utils import textgenrnn_encode_cat
 from .textgenrnn import textgenrnn
 

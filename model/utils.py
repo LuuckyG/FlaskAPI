@@ -64,7 +64,7 @@ def textgenrnn_generate(model, vocab,
 
     collapse_char = ' ' if word_level else ''
     end = False
-    print(prefix) 
+
     # If generating word level, must add spaces around each punctuation.
     # https://stackoverflow.com/a/3645946/9314418
     if word_level and prefix:
