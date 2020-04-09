@@ -47,7 +47,7 @@ def save_config(model, tokenizer, cfg, reverse_word_map, results_directory):
     model.save(str(results_directory / 'final_model.h5'))
 
     # Save training configuration in JSON file
-    cfg['results_directory'] = str(results_directory)
+    cfg['results_dir'] = str(results_directory)
     cfg['results_path'] = str(cfg['results_path'])
     cfg['path_to_file'] = str(cfg['path_to_file'])
     cfg['model_path'] = str(cfg['model_path'])
