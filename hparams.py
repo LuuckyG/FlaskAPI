@@ -62,7 +62,7 @@ class HParams:
                                 help="Max size of the dictionary.")
         arg_parser.add_argument('--line_delimited', action='store_true',
                                 help="Set to True if each text has its own line in the source file (default is false).")
-        arg_parser.add_argument('--gen_epochs', type=int, default=101,
+        arg_parser.add_argument('--gen_epochs', type=int, default=50,
                                 help="Generates sample text from model after given number of epochs.")
         arg_parser.add_argument('--validation', action='store_false',
                                 help="If train__size < 1.0, test on holdout dataset; will make overall training slower (default is true).")
