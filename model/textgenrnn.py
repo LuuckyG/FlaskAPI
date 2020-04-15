@@ -158,7 +158,7 @@ class textgenrnn:
     def train_on_texts(self, texts, context_labels=None,
                        batch_size=128,
                        num_epochs=50,
-                       verbose=1,
+                       verbose=0,
                        new_model=False,
                        gen_epochs=1,
                        train_size=1.0,

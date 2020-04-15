@@ -57,7 +57,7 @@ def textgenrnn_generate(model, vocab,
                         max_gen_length=300,
                         top_n=3,
                         prefix=None,
-                        stop_tokens=['\t']):
+                        stop_tokens=None):
     """
     Generates and returns a single text.
     """
@@ -101,10 +101,6 @@ def textgenrnn_generate(model, vocab,
         text += [next_char]
         if next_char == meta_token or len(text) >= max_gen_length:
             end = True
-        gen_break = (next_char in stop_tokens or word_level or
-                        len(stop_tokens) == 0)
-        if gen_break:
-            break
 
     # if single text, ignore sequences generated w/ padding
     # if not single text, remove the <s> meta_tokens
