@@ -115,7 +115,8 @@ class textgenrnn:
     }
     default_config = config.copy()
 
-    def __init__(self, model_folder, weights_path=None,
+    def __init__(self, model_folder, 
+            weights_path=None,
                  vocab_path=None,
                  config_path=None,
                  name="textgenrnn",
@@ -146,8 +147,8 @@ class textgenrnn:
             if not return_as_list:
                 print("{}\n".format(gen_text))
             gen_texts.append(gen_text)
-        if return_as_list:
-            return gen_texts
+
+        return gen_texts
 
     def generate_samples(self, n=3, temperatures=[0.2, 0.5, 1.0], **kwargs):
         for temperature in temperatures:
