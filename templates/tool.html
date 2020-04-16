@@ -48,7 +48,7 @@
 
       <div class="wbso-tool" style="margin-left: 18px; margin-right: 18px; padding-left: 30px; padding-right: 15px; display: block;">
         <div class="wbso-tool input-field" style="width: 50%; display: block; float: left;">
-          <form action="{{ url_for('predict')}}" method="POST">
+          <form action="{{ url_for('predict')}}" method="GET">
             <textarea name="message" placeholder="Enter Your Message Here" rows="4" cols="50"></textarea>
             <br/>
         
@@ -57,7 +57,9 @@
         </div>
   
         <div class="wbso-tool output-field" style="width: 50%; display: block; float: right;">
+          <form action="{{ url_for('predict')}}" method="POST">
             <textarea name="message" placeholder="Output of model" rows="4" cols="50"></textarea>
+          </form>
         </div>
       </div>
     </div>
