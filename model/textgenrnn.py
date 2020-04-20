@@ -116,7 +116,7 @@ class textgenrnn:
     default_config = config.copy()
 
     def __init__(self, model_folder, 
-            weights_path=None,
+                 weights_path=None,
                  vocab_path=None,
                  config_path=None,
                  name="textgenrnn",

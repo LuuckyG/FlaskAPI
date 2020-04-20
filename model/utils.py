@@ -4,7 +4,6 @@ import json
 import h5py
 
 import numpy as np
-from tqdm import trange
 from random import shuffle
 
 from sklearn.preprocessing import LabelBinarizer
