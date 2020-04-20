@@ -23,7 +23,7 @@ class HParams:
                                 default='./results',
                                 help="Folder where the model results are saved.")
         arg_parser.add_argument('--path_to_file', type=Path,
-                                default='database.xlsx',
+                                default='./data/database.xlsx',
                                 help="Path where the full dataset can be found.")
         arg_parser.add_argument('--subject', '--s', type=str, default='Aanleiding',
                                 help="Choose one of the following subjects: "
