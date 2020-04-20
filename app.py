@@ -51,6 +51,5 @@ def prediction():
 
 if __name__ == '__main__':
     # load model at the beginning once only
-    load_model('/results/char_bidir__l20_d2_w256_09-22')  
-
+    load_model('./results/char_bidir__l20_d2_w256_09-22')  
     app.run(debug=True)
