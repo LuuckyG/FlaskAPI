@@ -62,7 +62,11 @@ def train_model(results_path: Path, path_to_file: str, cfg: dict):
         rnn_bidirectional=cfg['rnn_bidirectional'],
         max_length=cfg['sentence_length'],
         dim_embeddings=100,
-        word_level=cfg['word_level'])           
+        word_level=cfg['word_level'])         
+    	
+    # Save config
+    with open(results_dir / 'config.json') as fp:
+        json.dump(cfg, fp)
 
     return model, cfg
 

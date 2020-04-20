@@ -2,23 +2,24 @@
 import json
 import pickle
 import numpy as np
+
 from tensorflow.keras.models import load_model
 from flask import Flask, request, render_template
 from .model.textgenrnn import textgenrnn
 
-model = None
+
 app = Flask(__name__)
 
-
-def load_model(model_folder):
-    global model
-
+def load_model():
+    model_folder = './results/char_bidir__l20_d2_w256_09-22'
+    print("IN LOAD FUNC")
     model = textgenrnn(model_folder=model_folder,
                        weights_path=(model_folder + '/weights.hdf5'),
                        vocab_path=(model_folder + '/vocab.json'),
                        config_path=(model_folder + '/config.json'))
 
     model.load(weights_path=(model_folder + '/weights.hdf5'))
+    return model
 
 @app.route('/')
 def home():
@@ -29,6 +30,7 @@ def home():
 def prediction():
     # Get input text
     input_text = request.form.get("input")
+    model = load_model()
 
     # Get model configuration
     if model.config['line_delimited']:
@@ -42,14 +44,15 @@ def prediction():
 
     # Generate text
     gen_text = model.generate(temperature=temperature,
-                                prefix=input_text,
-                                n=n,
-                                max_gen_length=max_gen_length)
+                              prefix=input_text,
+                              n=n,
+                              max_gen_length=max_gen_length)[0]
     
+    if not input_text:
+        input_text = ''
+
     return render_template("tool.html", gen_text=gen_text, input_text=input_text)
 
 
 if __name__ == '__main__':
-    # load model at the beginning once only
-    load_model('./results/char_bidir__l20_d2_w256_09-22')  
     app.run(debug=True)
