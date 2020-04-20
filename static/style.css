@@ -88,7 +88,7 @@ hr {
 
 #main-container {
   display: block;
-  height: 300px;
+  height: auto;
   margin-bottom: 15px;
   font-family: "Clarendon Text Pro";
 }
