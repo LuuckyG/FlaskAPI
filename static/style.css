@@ -1,56 +1,120 @@
-body{
-	font:15px/1.5 Arial, Helvetica,sans-serif;
-	padding: 0px;
-	background-color:#f4f3f3;
+.body {
+  overflow-x: hidden;
+	font-size: 1em;
+  line-height: 1.85714286em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-family: Lato regular, 'Helvetica', 'Arial', sans-serif;
+  color: #666666;
+  font-weight: 400;
 }
 
-.container{
-	width:100%;
-	margin: auto;
-	overflow: hidden;
+.row {
+  margin-left: 15px;
+  margin-right: 15px;
 }
 
-header{
-	background:#03A9F4;#35434a;
-	border-bottom:#448AFF 3px solid;
-	height:120px;
-	width:100%;
-	padding-top:30px;
-
-}
-
-.main-header{
-			text-align:center;
-			background-color: blue;
-			height:100px;
-			width:100%;
-			margin:0px;
-		}
-#brandname{
-	float:left;
-	font-size:30px;
-	color: #fff;
-	margin: 10px;
-}
-
-header h2{
-	text-align:center;
-	color:#fff;
-
+.section {
+  background-color: #666666;
 }
 
 
+.org-logo {
+  display: block;
+  width: 10%; 
+  float: left;
+  padding-left: 15px;
+  padding-right: 15px;
+  padding-top: 15px;
+}
 
-.btn-info {background-color: #2196F3;
-	height:40px;
-	width:100px;} /* Blue */
-.btn-info:hover {background: #0b7dda;}
+.navbar {
+  width: 80%;
+  text-align: right;
+  display: inline-block;
+  
+}
 
+.container {
+  margin-right: auto;
+  margin-left: auto;
+}
 
-.resultss{
-	border-radius: 15px 50px;
-    background: #345fe4;
-    padding: 20px;
-    width: 200px;
-    height: 150px;
+#menu-hoofdmenu li {
+	display: inline-block;
+	list-style-type: none;
+}
+
+.menu-item a {
+  text-decoration: none;
+  float: left;
+  text-size-adjust: 100%;
+  text-align: right;
+}
+
+ul#menu-hoofdmenu li a {
+  color: black;
+  font-size: 15px;
+  text-transform: capitalize;
+  font-weight: 600 !important;
+  margin-left: 20px;
+  opacity: 0.5;
+}
+
+ul#menu-hoofdmenu li a:hover {
+  opacity: 1.0;
+}
+
+h2 {
+  color: rgb(37, 37, 37);
+  font-family: "Clarendon Text Pro";
+  font-size: 45px;
+  font-variant-ligatures: common-ligatures;
+  font-weight: 300;
+  letter-spacing: 2px;
+  text-size-adjust: 100%;
+  line-height: 45px;
+}
+
+hr {
+  border: 0;
+  height: 1px;
+  background: rgb(116, 116, 116);
+  background-image: -webkit-linear-gradient(left, #ccc, rgb(116, 116, 116), #ccc);
+  background-image: -moz-linear-gradient(left, #ccc, rgb(116, 116, 116), #ccc);
+  background-image: -ms-linear-gradient(left, #ccc, rgb(116, 116, 116), #ccc);
+  background-image: -o-linear-gradient(left, #ccc, rgb(116, 116, 116), #ccc);
+}
+
+#main-container {
+  display: block;
+  height: auto;
+  margin-bottom: 15px;
+  font-family: "Clarendon Text Pro";
+}
+
+#body-title {
+  width: 50%;
+  display: block;
+  float: left;
+}
+
+#body-text {
+  display: inline-block;
+  width: 50%;
+}
+
+.container:before,
+.container:after {
+    content: "";
+    display: table;
+}
+
+.container:after {
+    clear: both;
+}
+
+.contact-button {
+  display: table;
+  margin: 0 auto;
 }

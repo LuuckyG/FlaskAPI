@@ -32,7 +32,7 @@ def train_model(results_path: Path, path_to_file: str, cfg: dict):
     # Set up results folder
     time_now = datetime.now()    
     results_dir = results_path / (('word' if cfg['word_level'] else 'char') 
-                                + ('_bidir_' if cfg['rnn_bidirectional'] else '') 
+                                + ('_bidir' if cfg['rnn_bidirectional'] else '') 
                                 + '_l' + str(cfg['sentence_length']) 
                                 + '_d' + str(cfg['rnn_layers']) 
                                 + '_w' + str(cfg['rnn_size']) 
@@ -62,7 +62,11 @@ def train_model(results_path: Path, path_to_file: str, cfg: dict):
         rnn_bidirectional=cfg['rnn_bidirectional'],
         max_length=cfg['sentence_length'],
         dim_embeddings=100,
-        word_level=cfg['word_level'])           
+        word_level=cfg['word_level'])         
+    	
+    # Save config
+    with open(results_dir / 'config.json') as fp:
+        json.dump(cfg, fp)
 
     return model, cfg
 
