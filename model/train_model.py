@@ -1,3 +1,4 @@
+import json
 import pandas as pd
 import tensorflow as tf
 
@@ -24,10 +25,17 @@ def train_model(results_path: Path, path_to_file: str, cfg: dict):
     # Import data
     if cfg['testing']:
         path_to_file = tf.keras.utils.get_file('shakespeare.txt', 'https://storage.googleapis.com/download.tensorflow.org/data/shakespeare.txt')
-        inputs = open(path_to_file, 'rb').read().decode(encoding='cp1252')
     else:
         dataset = pd.read_excel(path_to_file)
         texts = dataset[dataset['Zwaartepunt'] == 'Programmatuur'][cfg['subject']].values
+        
+        inputs = ''
+        for t in texts:
+            inputs += t
+
+        path_to_file = './data/{}_text.txt'.format(cfg['subject'].lower()[0])
+        with open(path_to_file, 'w') as f:
+            f.write(inputs)
 
     # Set up results folder
     time_now = datetime.now()    
@@ -48,7 +56,7 @@ def train_model(results_path: Path, path_to_file: str, cfg: dict):
     train_function = model.train_from_file if cfg['line_delimited'] else model.train_from_largetext_file
 
     train_function(
-        file_path='aanleiding.txt',
+        file_path=path_to_file,
         new_model=True,
         num_epochs=cfg['epochs'],
         gen_epochs=cfg['gen_epochs'],
@@ -64,9 +72,9 @@ def train_model(results_path: Path, path_to_file: str, cfg: dict):
         dim_embeddings=100,
         word_level=cfg['word_level'])         
     	
-    # Save config
-    with open(results_dir / 'config.json') as fp:
-        json.dump(cfg, fp)
+    # # Save config
+    # with open(results_dir / 'config.json') as fp:
+    #     json.dump(cfg, fp)
 
     return model, cfg
 
