@@ -11,8 +11,7 @@ from .model.textgenrnn import textgenrnn
 app = Flask(__name__)
 
 def load_model():
-    model_folder = './results/char_bidir__l20_d2_w256_09-22'
-    print("IN LOAD FUNC")
+    model_folder = './results/char_l30_d2_w128_18-54'
     model = textgenrnn(model_folder=model_folder,
                        weights_path=(model_folder + '/weights.hdf5'),
                        vocab_path=(model_folder + '/vocab.json'),
