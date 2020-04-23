@@ -333,7 +333,7 @@ class textgenrnn:
                 model_t = self.model
 
         # Callbacks
-        es = EarlyStopping(monitor='val_loss', mode='min', verbose=1, patience=50)
+        es = EarlyStopping(monitor='val_loss', mode='min', verbose=1, patience=20)
         lr = LearningRateScheduler(lr_linear_decay)
         tb = TensorBoard(log_dir=self.config['results_dir'], 
                          write_graph=True, 
