@@ -5,7 +5,7 @@ import tensorflow as tf
 from pathlib import Path
 from datetime import datetime
 
-from hparams import HParams
+from .hparams import HParams
 from .utils import textgenrnn_encode_cat
 from .textgenrnn import textgenrnn
 
@@ -33,7 +33,7 @@ def train_model(results_path: Path, path_to_file: str, cfg: dict):
         for t in texts:
             inputs += t
 
-        path_to_file = './data/{}_text.txt'.format(cfg['subject'].lower()[0])
+        path_to_file = 'src/model/data/{}_text.txt'.format(cfg['subject'].lower()[0])
         with open(path_to_file, 'w') as f:
             f.write(inputs)
 

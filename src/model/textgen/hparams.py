@@ -19,11 +19,10 @@ class HParams:
 
         # Required arguments
         arg_parser.add_argument('--results_path', type=Path,
-                                # default='C:/Users/luukg/Documents/01_Evolvalor/FlaskAPI/results',
-                                default='./results',
+                                default='src/model/results',
                                 help="Folder where the model results are saved.")
         arg_parser.add_argument('--path_to_file', type=Path,
-                                default='./data/database.xlsx',
+                                default='C:/Users/luukg/Documents/01_Evolvalor/FlaskAPI/src/model/data/database.xlsx',
                                 help="Path where the full dataset can be found.")
         arg_parser.add_argument('--subject', '--s', type=str, default='Aanleiding',
                                 help="Choose one of the following subjects: "

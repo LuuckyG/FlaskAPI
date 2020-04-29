@@ -1,7 +1,5 @@
-database.xlsx
-results/
+src/model/data/
+src/model/results/
 __pycache__/
 .idea/
 .vscode/
-data/
-aanleiding.txt

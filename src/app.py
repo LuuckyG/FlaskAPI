@@ -5,7 +5,7 @@ import numpy as np
 
 from tensorflow.keras.models import load_model, model_from_json
 from flask import Flask, request, render_template
-from .model.textgenrnn import textgenrnn
+from .model.textgen.textgenrnn import textgenrnn
 
 
 app = Flask(__name__)
@@ -28,7 +28,7 @@ model = None
 
 def load_model():
     global model
-    model_folder = './results/char_l30_d2_w128_18-54'
+    model_folder = './model/results/char_l30_d2_w128_18-54'
     model = textgenrnn(model_folder=model_folder,
                        weights_path=(model_folder + '/weights.hdf5'),
                        vocab_path=(model_folder + '/vocab.json'),
