@@ -6,7 +6,7 @@ import h5py
 import numpy as np
 
 import tensorflow as tf
-from tensorflow.keras.callbacks import LearningRateScheduler, Callback, TensorBoard
+from tensorflow.keras.callbacks import LearningRateScheduler, Callback, TensorBoard, ModelCheckpoint, EarlyStopping
 from tensorflow.keras.models import Model, load_model
 from tensorflow.keras.preprocessing import sequence
 from tensorflow.keras.preprocessing.text import Tokenizer, text_to_word_sequence
@@ -19,7 +19,6 @@ from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
 from sklearn.metrics.pairwise import cosine_similarity
 
-# from keras.backend.tensorflow_backend import set_session
 from tensorflow.compat.v1.keras.backend import set_session
 
 from pkg_resources import resource_filename
@@ -198,7 +197,7 @@ class textgenrnn:
                        validation=True,
                        dropout=0.0,
                        via_new_model=False,
-                       save_epochs=0,
+                       save_epochs=5,
                        multi_gpu=False,
                        **kwargs):
 
@@ -332,21 +331,20 @@ class textgenrnn:
             else:
                 model_t = self.model
 
+        # Callbacks
+        es = EarlyStopping(monitor='val_loss', mode='min', verbose=1, patience=20)
+        lr = LearningRateScheduler(lr_linear_decay)
+        tb = TensorBoard(log_dir=self.config['results_dir'], 
+                         write_graph=True, 
+                         write_grads=False, 
+                         write_images=True)
+
+        # Training of model
         model_t.fit(gen, steps_per_epoch=steps_per_epoch,
                     epochs=num_epochs,
-                    callbacks=[
-                        LearningRateScheduler(
-                            lr_linear_decay),
-                        TensorBoard(log_dir=self.config['results_dir'], 
-                                           write_graph=True, 
-                                           write_grads=False, 
-                                           write_images=True),
-                        generate_after_epoch(
-                            self, gen_epochs,
-                            max_gen_length),
-                        save_model_weights(
-                            self, num_epochs,
-                            save_epochs)],
+                    callbacks=[es, lr, tb,
+                               generate_after_epoch(self, gen_epochs, max_gen_length),
+                               save_model_weights(self, num_epochs, save_epochs)],
                     verbose=verbose,
                     max_queue_size=10,
                     validation_data=gen_val,
@@ -450,6 +448,43 @@ class textgenrnn:
             self.train_on_texts(texts, context_labels=context_labels, **kwargs)
 
     def train_from_largetext_file(self, file_path, new_model=True, **kwargs):
+
+        self.config.update({
+            'file_path': file_path,
+            'new_model': new_model,
+            'num_epochs': kwargs['num_epochs'],
+            'gen_epochs': kwargs['gen_epochs'],
+            'batch_size': kwargs['batch_size'],
+            'train_size': kwargs['train_size'],
+            'dropout': kwargs['dropout'],
+            'validation': kwargs['validation'],
+            'is_csv': kwargs['is_csv'],
+            'rnn_layers': kwargs['rnn_layers'],
+            'rnn_size': kwargs['rnn_size'],
+            'rnn_bidirectional': kwargs['rnn_bidirectional'],
+            'max_length': kwargs['max_length'],
+            'dim_embeddings': kwargs['dim_embeddings'],
+            'word_level': kwargs['word_level']}
+        )
+
+        self.default_config.update({
+            'file_path': file_path,
+            'new_model': new_model,
+            'num_epochs': kwargs['num_epochs'],
+            'gen_epochs': kwargs['gen_epochs'],
+            'batch_size': kwargs['batch_size'],
+            'train_size': kwargs['train_size'],
+            'dropout': kwargs['dropout'],
+            'validation': kwargs['validation'],
+            'is_csv': kwargs['is_csv'],
+            'rnn_layers': kwargs['rnn_layers'],
+            'rnn_size': kwargs['rnn_size'],
+            'rnn_bidirectional': kwargs['rnn_bidirectional'],
+            'max_length': kwargs['max_length'],
+            'dim_embeddings': kwargs['dim_embeddings'],
+            'word_level': kwargs['word_level']}
+        )
+
         with open(file_path, 'r', encoding='utf8', errors='ignore') as f:
             texts = [f.read()]
 

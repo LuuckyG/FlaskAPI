@@ -3,26 +3,44 @@ import json
 import pickle
 import numpy as np
 
-from tensorflow.keras.models import load_model
+from tensorflow.keras.models import load_model, model_from_json
 from flask import Flask, request, render_template
-from .model.textgenrnn import textgenrnn
+from .model.textgen.textgenrnn import textgenrnn
 
 
 app = Flask(__name__)
 
+model = None
+
+# def load_model():
+#     global model
+#     model_folder = './results/char_l30_d2_w128_18-54'
+
+#     # load json and create model
+#     with open(model_folder + '/model.json', 'r'):
+#         model_json = file.read()
+    
+#     model = model_from_json(model_json)
+
+#     # load weights
+#     model.load_weights(h5_file)
+
+
 def load_model():
-    model_folder = './results/char_bidir__l20_d2_w256_09-22'
-    print("IN LOAD FUNC")
+    global model
+    model_folder = './model/results/char_l30_d2_w128_18-54'
     model = textgenrnn(model_folder=model_folder,
                        weights_path=(model_folder + '/weights.hdf5'),
                        vocab_path=(model_folder + '/vocab.json'),
                        config_path=(model_folder + '/config.json'))
 
     model.load(weights_path=(model_folder + '/weights.hdf5'))
-    return model
+    print(model)
 
 @app.route('/')
 def home():
+    load_model()
+    print(model)
     return render_template('home.html')
 
 
@@ -30,7 +48,7 @@ def home():
 def prediction():
     # Get input text
     input_text = request.form.get("input")
-    model = load_model()
+    # model = load_model()
 
     # Get model configuration
     if model.config['line_delimited']:
