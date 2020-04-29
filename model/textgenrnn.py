@@ -19,7 +19,6 @@ from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
 from sklearn.metrics.pairwise import cosine_similarity
 
-# from keras.backend.tensorflow_backend import set_session
 from tensorflow.compat.v1.keras.backend import set_session
 
 from pkg_resources import resource_filename

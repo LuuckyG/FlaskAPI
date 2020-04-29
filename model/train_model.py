@@ -72,9 +72,10 @@ def train_model(results_path: Path, path_to_file: str, cfg: dict):
         dim_embeddings=100,
         word_level=cfg['word_level'])         
     	
-    # # Save config
-    # with open(results_dir / 'config.json') as fp:
-    #     json.dump(cfg, fp)
+    # serialize to JSON
+    json_file = model.to_json()
+    with open((results_dir / 'model.json'), "w") as f:
+        f.write(json_file)
 
     return model, cfg
 
