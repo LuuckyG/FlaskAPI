@@ -12,20 +12,6 @@ app = Flask(__name__)
 
 model = None
 
-# def load_model():
-#     global model
-#     model_folder = './results/char_l30_d2_w128_18-54'
-
-#     # load json and create model
-#     with open(model_folder + '/model.json', 'r'):
-#         model_json = file.read()
-    
-#     model = model_from_json(model_json)
-
-#     # load weights
-#     model.load_weights(h5_file)
-
-
 def load_model():
     global model
     model_folder = './model/results/char_l30_d2_w128_18-54'
@@ -35,12 +21,11 @@ def load_model():
                        config_path=(model_folder + '/config.json'))
 
     model.load(weights_path=(model_folder + '/weights.hdf5'))
-    print(model)
+
 
 @app.route('/')
 def home():
     load_model()
-    print(model)
     return render_template('home.html')
 
 
@@ -48,7 +33,6 @@ def home():
 def prediction():
     # Get input text
     input_text = request.form.get("input")
-    # model = load_model()
 
     # Get model configuration
     if model.config['line_delimited']:
