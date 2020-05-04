@@ -24,8 +24,10 @@ def index_searcher(dirname="src/model/textsim/indexdir",
         # Print top 'N' results
         if len(results) > 0:
             for hit in results:
-                print('File: {}\nTitel: {}\nScore: {}\n'.format(hit['path'], hit['title'], str(hit.score)))
-                print('')
+                print('Bedrijf: {}\nFile: {}\nTitel: {}\nScore: {}\n'.format(hit['bedrijf'], hit['path'], hit['title'], str(hit.score)))
+                
+                print(hit.highlights('full_text'))
+                print('\n')
 
             return results
 
