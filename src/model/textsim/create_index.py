@@ -1,11 +1,12 @@
 import os
+import re
 import pandas as pd
 
 from whoosh.index import create_in
-from whoosh.fields import Schema, TEXT, ID
+from whoosh.fields import Schema, TEXT, ID, NUMERIC
 
 
-def populate_index(dirname='indexdir', database='../data/database.xlsx'):
+def populate_index(dirname='/indexdir', database='C:/Users/luukg/Documents/01_Evolvalor/FlaskAPI/src/model/data/database.xlsx'):
     """
     Create schema and index.
 
@@ -24,10 +25,10 @@ def populate_index(dirname='indexdir', database='../data/database.xlsx'):
         - Prog: Programmeertalen, ontwikkelomgevingen en tools	
         - nieuw: Waarom technisch nieuw?
     """
-    
+
     schema = Schema(nr=ID (stored=True),
                     title=TEXT (stored=True),
-                    path=TEXT (stored=True),
+                    path=ID (stored=True),
                     Bedrijf=TEXT (stored=True),
                     Jaar=TEXT (stored=True),
                     Zwaartepunt=TEXT (stored=True),
@@ -46,20 +47,21 @@ def populate_index(dirname='indexdir', database='../data/database.xlsx'):
 
     # Get content from excel file
     db = pd.read_excel(database)
+    db.fillna('None', inplace=True)
     db = get_full_text(db)
 
     # Create writer to add content to index
-    with ix.writer as writer:
+    with ix.writer() as writer:
         for i, row in db.iterrows():
             add_files(row, writer)
 
 
-def add_files(row, writer, db):
-    writer.update_document(nr=row['Projectnummer'],
+def add_files(row, writer):
+    writer.update_document(nr=str(row['Projectnummer']),
                            title=row['Projecttitel'],
                            path=row['filename'],
                            Bedrijf=row['Bedrijf'],
-                           Jaar=row['Jaar'],
+                           Jaar=str(row['Jaar']),
                            Zwaartepunt=row['Zwaartepunt'],
                            Opdrachtgever=row['Opdrachtgever'],
                            full_text=row['full_text'],
@@ -71,12 +73,16 @@ def add_files(row, writer, db):
 
 
 def get_full_text(db):
-    # Get parts of tender
-    parts = db.columns[-5:]
-    
+    # Get parts of tender 
+    parts = ["Aanleiding", 
+            "Technische knelpunten", 
+            "Oplossingsrichting", 
+            "Programmeertalen, ontwikkelomgevingen en tools", 	
+            "Waarom technisch nieuw?"]
+
     full_texts = []
 
-    for i, row in df.iterrows:
+    for i, row in db.iterrows():
         full_text = ''
         for p in parts:
             full_text += p + '\n' + row[p]
@@ -90,4 +96,4 @@ def get_full_text(db):
 
 
 if __name__ == '__main__':
-    create_index()
+    populate_index()
