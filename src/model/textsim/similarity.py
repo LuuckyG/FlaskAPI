@@ -16,6 +16,6 @@ def text_search(dirname=None, database=None, search_query=None, top_n=5):
 
 if __name__ == '__main__':
     search_query = input('Type your search here:')
-    text_search(dirname='indexdir', 
-                database='../data/database.xlsx', 
+    text_search(dirname='src/model/textsim/indexdir', 
+                database='C:/Users/luukg/Documents/01_Evolvalor/FlaskAPI/src/model/data/database.xlsx', 
                 search_query=search_query)
