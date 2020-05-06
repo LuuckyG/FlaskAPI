@@ -391,7 +391,8 @@ class textgenrnn:
         # Create a new, blank model w/ given params
         self.model = textgenrnn_model(self.num_classes,
                                       dropout=dropout,
-                                      cfg=self.config)
+                                      cfg=self.config,
+                                      optimizer=Adam(lr=self.config['learning_rate']))
 
         # Save the files needed to recreate the model
         with open('{}/vocab.json'.format(self.config['results_dir']),

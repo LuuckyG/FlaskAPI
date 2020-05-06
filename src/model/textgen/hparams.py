@@ -74,7 +74,7 @@ class HParams:
         # LSTM-Net architecture parameters
         arg_parser.add_argument('--rnn_layers', '--rnn', type=int, default=3,
                                 help="Number of rnn-based layers.")
-        arg_parser.add_argument('--rnn_size', type=int, default=256,
+        arg_parser.add_argument('--rnn_size', type=int, default=128,
                                 help="Number of cells in each LSTM layer.")                        
         arg_parser.add_argument('--activation', '--act', type=str, default='relu',
                                 help="Choose activation function for hidden layers: 'relu' (default), 'sigmoid', or 'leakyrelu'.")
