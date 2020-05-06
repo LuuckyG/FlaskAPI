@@ -2,4 +2,4 @@ src/model/data/
 src/model/results/
 __pycache__/
 .idea/
-.vscode/
+.vscode
