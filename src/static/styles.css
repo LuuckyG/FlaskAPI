@@ -1,13 +1,14 @@
 /* Master styles */
-body {
-  font-family: "Lato regular, sans-serif";
-  margin: 0px;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-.container {
-  display: grid;
-  grid-template-columns: 1fr;
-  flex-wrap: wrap;
+body {
+  display: flex;
+  flex-direction: column;
+  font-family: "Lato regular, sans-serif";
 }
 
 h1 {
@@ -29,27 +30,30 @@ h5 {
   font-size: 18px;
 }
 
-
-div:before, div:after {
-    content: "";
-    display: table;
-}
-
-div:after {
-    clear: both;
-}
-
 /* Navbar style */
 .nav-wrapper {
   display: flex;
-  justify-content: space-between;
-  padding: 38px;
-  margin-left: 30px;
-  margin-right: 30px;
+  flex-wrap: wrap;
+  flex-basis: 80%;
+  justify-content: space-evenly;
+  align-items: center;
+  padding: 20px;
+}
+
+.left-side {
+  flex: 2;
+}
+
+.brand {
+  display: flex;
+  align-content: center;
+  justify-content: space-evenly;
 }
 
 .right-side {
   display: flex;
+  flex: 4;
+  justify-content: center;
 }
 
 .nav-wrapper > .right-side > div {
@@ -89,23 +93,20 @@ div:after {
 
 /* Search engine form styling */
 .content-wrapper {
-  width: 70%;
-  margin: auto;
+  display: flex;
+  justify-content: space-around;
   margin-bottom: 30px;
 }
 
 /* Search engine results styling */
-
+.search-engine-wrapper {
+  flex-basis: 70%;
+}
 
 /* Footer styling */
 .footer-wrapper {
-  display: grid;
-  grid-template-columns: 1fr;
-  position: relative;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
+  display: flex;
+  flex-direction: column;
   text-align: center;
 }
 
@@ -118,22 +119,62 @@ div:after {
 }
 
 .contact-btn {
-  margin-bottom: 20px;
+  margin-top: 20px;
+  margin-bottom: 15px;
+}
+
+.contact-btn > button {
+  border-radius: 5px;
+}
+
+.contact-btn > button > a {
+  margin: 15px 10px 15px 10px;
+  text-decoration: none;
 }
 
 .footer-contact-wrapper {
+  align-content: center;
   background-color: #1f1f1f;
 }
 
 .footer-contact-image {
-  position: relative; 
-  left: 0; 
-  top: 0; 
-  box-sizing: border-box; 
-  width: 100%; 
-  padding-left: 0px; 
-  padding-right: 0px; 
   padding-top: 30px !important; 
-  padding-bottom: 30px !important;
-  background-color: #1f1f1f;
+}
+
+.footer-contact-text {
+  padding: 15px;
+}
+
+@media screen and (max-width: 1200px) {
+  .nav-wrapper {
+    flex-direction: column;
+  }
+}
+
+@media screen and (max-width: 992px) {
+  .nav-wrapper {
+    flex-direction: row;
+  }
+  
+  .right-side {
+    flex-direction: column;
+    align-content: flex-end;
+    align-items: flex-end;
+  }
+
+  .nav-link-wrapper {
+    width: fit-content;
+  }
+
+  .nav-link-wrapper > a {
+    text-align: right;
+  }
+
+  .left-side {
+    text-align: left;
+  }
+
+  .search-engine-wrapper {
+    flex-basis: 90%;
+  }
 }
