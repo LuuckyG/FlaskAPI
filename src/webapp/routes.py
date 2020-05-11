@@ -1,19 +1,17 @@
-# Serve model as a flask application
 import json
-import pickle
+import email_validator
 import numpy as np
 
 from tensorflow.keras.models import load_model, model_from_json
-from flask import Flask, request, render_template, url_for
+from flask import Flask, request, render_template, url_for, flash, redirect
 
-from .model.textgen.textgenrnn import textgenrnn
-from .forms import RegistrationForm, LoginForm
+from src.webapp import app
+from src.webapp.forms import SearchForm
+from src.model.textgen.textgenrnn import textgenrnn
+from src.model.textsim.search_index import index_searcher
 
-app = Flask(__name__)
-app.config['SECRET_KEY'] = 'b33282311698b5bb8f1979de49f5b167'
 
 model = None
-
 def load_model():
     global model
     model_folder = './model/results/char_l30_d2_w128_18-54'
@@ -25,19 +23,23 @@ def load_model():
     model.load(weights_path=(model_folder + '/weights.hdf5'))
 
 
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def home():
-    return render_template('index.html')
+    form = SearchForm()
 
-# @app.route('/register')
-# def register():
-#     form = RegistrationForm()
-#     return render_template('register.html', title='Register', form=form)
+    if request.method == 'POST':
+        search_query = request.form['key_terms']
+        results = index_searcher(query_string=search_query)
+        return redirect(url_for('results', results=results))
 
-# @app.route('/login')
-# def register():
-#     form = LoginForm()
-#     return render_template('login.html', title='Login', form=form)
+    # if form.validate_on_submit():
+    #     inputs = request.ge
+    #     return redirect(url_for('results'), form=form)
+    return render_template('index.html', form=form)
+
+@app.route('/results', methods=['GET', 'POST'])
+def results():
+    return render_template('results.html', results=results)
 
 
 @app.route('/tool')
@@ -65,7 +67,3 @@ def prediction():
         input_text = ''
 
     return render_template("tool.html", gen_text=gen_text, input_text=input_text)
-
-
-if __name__ == '__main__':
-    app.run(debug=True)

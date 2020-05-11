@@ -1,0 +1,26 @@
+{% extends "layout.html" %}
+{% block content %}
+  <div class="search-engine-wrapper">
+    <div class="text-wrapper">
+      <div class="section-header"><h1>WBSO Search Engine</h1></div>
+      <div class="section-content">Lorem ipsum dolor sit amet consectetur adipisicing elit. Id omnis inventore maxime, tempora tempore voluptate, quas ipsa repudiandae dolorum neque harum quibusdam? Maiores nemo dignissimos iusto velit, et aspernatur.</div>
+    </div>
+    <div class="search-results">
+      {% print(results) %}
+
+      {% if len(results) > 0 %}
+        {% for k,v in results.iterate() %}
+          {% for hit in results[k] %}
+            {% print(k) %}
+            {% print('-----------------') %}
+
+            {% print('Bedrijf: {}\nFile: {}\nTitel: {}\nScore: {}\n'.format(hit['bedrijf'], hit['path'], hit['title'], str(hit.score))) %}
+            {% print(hit.highlights(search_field)) %}
+            {% print('\n') %}
+          {% endfor %}
+        {% endfor %}
+      {% endif %}
+    </div>
+
+  </div>
+{% endblock content%}

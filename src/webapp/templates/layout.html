@@ -3,6 +3,7 @@
 
 <head>
   <meta charset='UTF-8'>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <meta name="description" content="At Evolvalor we help innovative organizations increase their growth by providing hands-on services. Find out what we can do for your business.">
   <link rel="icon" href="../static/images/evolvalor-faviconDonker.png">
   <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
@@ -33,7 +34,7 @@
       </div>
 
       <div class="nav-link-wrapper active-nav-link">
-        <a href="#">WBSO Tool</a>
+        <a href="{{ url_for('home') }}">WBSO Tool</a>
       </div>
 
       <div class="nav-link-wrapper">
@@ -52,7 +53,9 @@
 
   </div>
 
-  {% block content %}{% endblock %}
+  <div class="content-wrapper">
+    {% block content %}{% endblock %}
+  </div>
 
   <div class="footer-wrapper">
     <div class="footer-contact-us">
