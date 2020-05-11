@@ -5,18 +5,44 @@
       <div class="section-header"><h1>WBSO Search Engine</h1></div>
       <div class="section-content">Lorem ipsum dolor sit amet consectetur adipisicing elit. Id omnis inventore maxime, tempora tempore voluptate, quas ipsa repudiandae dolorum neque harum quibusdam? Maiores nemo dignissimos iusto velit, et aspernatur.</div>
     </div>
-    <div class="search-results">
-      {% for k,v in results.items() %}
-        {% for hit in results[k] %}
-          {% print(k) %}
-          {% print('-----------------') %}
 
-          {% print('Bedrijf: {}\nFile: {}\nTitel: {}\nScore: {}\n'.format(hit['bedrijf'], hit['path'], hit['title'], str(hit.score))) %}
-          {% print(hit.highlights(search_field)) %}
-          {% print('\n') %}
+    <div class="search-input-wrapper">
+      <h3 class="search-input-title search-heading">Search terms</h3>
+      <table class="search-input-items" border=1px>
+        {% for key, value in inputs.items() %}
+          {% if key not in ['csrf_token', 'submit'] %}
+            <tr>
+                <th class="search-input-key"> {{ key }} </th>
+                <td class="search-input-value"> {{ value }} </td>
+            </tr>
+            {% endif %}
         {% endfor %}
-      {% endfor %}
+      </table>
     </div>
+
+    <div class="search-output-wrapper">
+      <h3 class="search-output-title search-heading">Best matching documents per section:</h3>
+
+      <div class="search-ouput">
+        {% for key in results.keys() %}
+          <div class="search-output-section">
+            <table class="search-input-items" border=1px>
+              <th class="search-output-section" scope="col">{{ key }}</th>
+              {% for hit in results[key] %}
+                <tr>
+                    <th class="search-output-key"> {{ hit['bedrijf'] }} </th>
+                    <td class="search-outut-value"> {{ hit['title'] }} </td>
+                    <!-- <td class="search-outut-value"> {{ hit['highlights'] }} </td> -->
+                    <td class="search-outut-value"> {{ hit['score'] }} </td>
+                </tr>
+              {% endfor %}
+            </table>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+    
+    <button class="btn btn-outline-info"><a href="{{ url_for('home') }}">Zoek opnieuw</a></button>
 
   </div>
 {% endblock content%}

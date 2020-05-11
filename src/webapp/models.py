@@ -7,7 +7,7 @@ class SearchQuery(db.Model):
     title = db.Column(db.String())
     zwaartepunt = db.Column(db.String())
     key_terms = db.Column(db.TEXT)
-    search_result = db.relationship('SearchResult', backref='result', lazy=True)
+    search_result = db.relationship('SearchResult', backref='query', lazy=True)
 
     def __repr__(self):
         return f"Searched using: {self.title} - {self.zwaartepunt} - {self.key_terms}"

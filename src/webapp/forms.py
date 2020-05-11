@@ -1,7 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, BooleanField
-from wtforms.validators import DataRequired, Length, Email, EqualTo
-
+from wtforms import StringField, SubmitField
 
 class SearchForm(FlaskForm):
     project_titel = StringField('Projecttitel')

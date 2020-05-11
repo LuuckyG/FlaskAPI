@@ -32,28 +32,23 @@ def index_searcher(dirname="src/model/textsim/indexdir",
         parser = qparser.MultifieldParser([search_field], ix.schema, group=og)
         parser.add_plugin(qparser.FuzzyTermPlugin())
         my_query = parser.parse(query_string)
+        results[search_field] = []
 
         # Search results
         with ix.searcher() as searcher:
-            result = list(searcher.search(my_query, limit=top_n))
-            results[search_field] = result
+            result = searcher.search(my_query, limit=top_n)
 
-            # Print top 'N' results
             if len(result) > 0:
                 for hit in result:
-                    print('Bedrijf: {}\nFile: {}\nTitel: {}\nScore: {}\n'.format(hit['bedrijf'], 
-                                                                                 hit['path'], 
-                                                                                 hit['title'], 
-                                                                                 str(hit.score)))
-
-                    print(hit.highlights(search_field))
-                    print('\n')
+                    hit_fields = hit.fields()
+                    hit_fields['score'] = hit.score
+                    hit_fields['highlights'] = hit.highlights(search_field)
+                    results[search_field].append(hit_fields)
 
     return results
 
 
 def instant_search(query_string):
-    # For example, to search the "full_text" field as the user types
     analyzer = analysis.NgramWordAnalyzer(minsize=5)
     full_text_field = fields.TEXT(analyzer=analyzer, phrase=False)
     schema = fields.Schema(full_text=full_text_field)

@@ -26,17 +26,14 @@ def load_model():
 @app.route('/', methods=['GET', 'POST'])
 def home():
     form = SearchForm()
-
-    if form.validate_on_submit():
-        search_query = form.key_terms.data
-        results = index_searcher(query_string=search_query)        
-        return redirect(url_for('results'))
-
     return render_template('index.html', form=form)
 
 @app.route('/results', methods=['GET', 'POST'])
 def results(): 
-    return render_template('results.html', results=results)
+    if request.method == 'POST':
+        inputs = request.form
+        results = index_searcher(query_string=inputs['key_terms'])
+        return render_template('results.html', inputs=inputs, results=results)
 
 
 @app.route('/tool')

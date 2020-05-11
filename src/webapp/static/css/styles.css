@@ -103,6 +103,19 @@ h5 {
   flex-basis: 70%;
 }
 
+.search-ouput {
+  display: flex;
+  flex-direction: row;
+  text-align: center;
+  align-items: center;
+}
+
+.search-output-section {
+  flex: 1;
+  padding: 20px;
+  margin: 30px;
+}
+
 /* Footer styling */
 .footer-wrapper {
   display: flex;
