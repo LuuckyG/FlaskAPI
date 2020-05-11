@@ -35,16 +35,19 @@ def index_searcher(dirname="src/model/textsim/indexdir",
 
         # Search results
         with ix.searcher() as searcher:
-            result = searcher.search(my_query, limit=top_n)
+            result = list(searcher.search(my_query, limit=top_n))
             results[search_field] = result
 
-            # # Print top 'N' results
-            # if len(result) > 0:
-            #     for hit in result:
-            #         print('Bedrijf: {}\nFile: {}\nTitel: {}\nScore: {}\n'.format(hit['bedrijf'], hit['path'], hit['title'], str(hit.score)))
+            # Print top 'N' results
+            if len(result) > 0:
+                for hit in result:
+                    print('Bedrijf: {}\nFile: {}\nTitel: {}\nScore: {}\n'.format(hit['bedrijf'], 
+                                                                                 hit['path'], 
+                                                                                 hit['title'], 
+                                                                                 str(hit.score)))
 
-            #         print(hit.highlights(search_field))
-            #         print('\n')
+                    print(hit.highlights(search_field))
+                    print('\n')
 
     return results
 

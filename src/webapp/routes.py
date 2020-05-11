@@ -3,7 +3,7 @@ import email_validator
 import numpy as np
 
 from tensorflow.keras.models import load_model, model_from_json
-from flask import Flask, request, render_template, url_for, flash, redirect
+from flask import request, render_template, url_for, flash, redirect
 
 from src.webapp import app
 from src.webapp.forms import SearchForm
@@ -27,18 +27,15 @@ def load_model():
 def home():
     form = SearchForm()
 
-    if request.method == 'POST':
-        search_query = request.form['key_terms']
-        results = index_searcher(query_string=search_query)
-        return redirect(url_for('results', results=results))
+    if form.validate_on_submit():
+        search_query = form.key_terms.data
+        results = index_searcher(query_string=search_query)        
+        return redirect(url_for('results'))
 
-    # if form.validate_on_submit():
-    #     inputs = request.ge
-    #     return redirect(url_for('results'), form=form)
     return render_template('index.html', form=form)
 
 @app.route('/results', methods=['GET', 'POST'])
-def results():
+def results(): 
     return render_template('results.html', results=results)
 
 
