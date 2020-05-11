@@ -4,7 +4,7 @@ import pickle
 import numpy as np
 
 from tensorflow.keras.models import load_model, model_from_json
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, url_for
 
 from .model.textgen.textgenrnn import textgenrnn
 from .forms import RegistrationForm, LoginForm
