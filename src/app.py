@@ -5,10 +5,12 @@ import numpy as np
 
 from tensorflow.keras.models import load_model, model_from_json
 from flask import Flask, request, render_template
-from .model.textgen.textgenrnn import textgenrnn
 
+from .model.textgen.textgenrnn import textgenrnn
+from .forms import RegistrationForm, LoginForm
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = 'b33282311698b5bb8f1979de49f5b167'
 
 model = None
 
@@ -25,8 +27,17 @@ def load_model():
 
 @app.route('/')
 def home():
-    load_model()
-    return render_template('home.html')
+    return render_template('index.html')
+
+# @app.route('/register')
+# def register():
+#     form = RegistrationForm()
+#     return render_template('register.html', title='Register', form=form)
+
+# @app.route('/login')
+# def register():
+#     form = LoginForm()
+#     return render_template('login.html', title='Login', form=form)
 
 
 @app.route('/tool')
