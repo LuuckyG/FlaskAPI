@@ -8,4 +8,4 @@ result1 = SearchResult(nr='A2019-01', title='Platform A', path='Airhub A2019-01.
 	prog='Python',
 	nieuw='Airhub BV is ontwikkelaar van aansturingssoftware van drones.',
 	score=8.34,
-	query_id=search_query.id)
+	query_id=query1.id)

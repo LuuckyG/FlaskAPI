@@ -7,7 +7,7 @@
     </div>
 
     <div class="search-input-wrapper">
-      <h3 class="search-input-title search-heading">Search terms</h3>
+      <h3 class="search-input-title search-heading">Zoektermen</h3>
       <table class="table search-input-items">
         {% for key, value in inputs.items() %}
           {% if key not in ['csrf_token', 'submit'] %}
@@ -21,7 +21,7 @@
     </div>
 
     <div class="search-output-wrapper">
-      <h3 class="search-output-title search-heading">Best matching documents per section:</h3>
+      <h3 class="search-output-title search-heading">Best overeenkomende documenten per sectie:</h3>
 
       <div class="search-ouput">
         {% for key in results.keys() %}
@@ -38,7 +38,7 @@
                 </thead>
                 {% for hit in results[key] %}
                   <tr>
-                    <th class="search-output-key" scope="row"> # </th>
+                    <th class="search-output-key" scope="row"> {{ loop.index0 + 1 }} </th>
                     <td class="search-output-key"> {{ hit['bedrijf'] }} </td>
                     <td class="search-outut-value"> {{ hit['title'] }} </td>
                     <!-- <td class="search-outut-value"> {{ hit['highlights'] }} </td> -->
@@ -52,7 +52,7 @@
       </div>
     </div>
     
-    <a class="btn btn-outline-info" style="display: block;" href="{{ url_for('home') }}"><span>Zoek opnieuw</span></a>
+    <a class="btn btn-outline-info" style="display: block;" href="{{ url_for('index') }}"><span>Zoek opnieuw</span></a>
 
   </div>
 {% endblock content%}

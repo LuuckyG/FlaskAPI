@@ -24,7 +24,7 @@ def load_model():
 
 
 @app.route('/', methods=['GET', 'POST'])
-def home():
+def index():
     form = SearchForm()
     return render_template('index.html', form=form)
 
@@ -32,9 +32,10 @@ def home():
 def results(): 
     if request.method == 'POST':
         inputs = request.form
-        results = index_searcher(query_string=inputs['key_terms'])
-        return render_template('results.html', inputs=inputs, results=results)
-
+        if inputs['key_terms']:
+            results = index_searcher(query_string=inputs['key_terms'])
+            return render_template('results.html', inputs=inputs, results=results)
+        return redirect(url_for('index'))
 
 @app.route('/tool')
 def prediction():
