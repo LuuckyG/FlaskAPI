@@ -91,33 +91,33 @@ h5 {
   color: black;
 }
 
+#call:hover {
+  border-bottom: 1px solid #FFC809;
+}
+
 /* Search engine form styling */
-/* .content-wrapper {
+.content-wrapper {
   display: flex;
   justify-content: space-around;
   margin-bottom: 30px;
-} */
+}
 
 /* Search engine results styling */
 .search-engine-wrapper {
+  display: flex;
   flex-direction: column;
   flex-basis: 70%;
 }
 
 .text-wrapper {
-  flex: 1;
+  padding: 20px;
 }
 
-.search-form-wrapper {
+.search-input-wrapper {
   display: flex;
   flex-direction: column;
-  flex: 1;
+  margin: auto;
 }
-
-/* .search-input-wrapper {
-  text-align: center;
-  width: fit-content;
-} */
 
 .search-ouput {
   display: flex;
