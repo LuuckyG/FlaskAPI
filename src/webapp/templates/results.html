@@ -8,7 +8,7 @@
 
     <div class="search-input-wrapper">
       <h3 class="search-input-title search-heading">Search terms</h3>
-      <table class="search-input-items" border=1px>
+      <table class="table search-input-items">
         {% for key, value in inputs.items() %}
           {% if key not in ['csrf_token', 'submit'] %}
             <tr>
@@ -26,14 +26,22 @@
       <div class="search-ouput">
         {% for key in results.keys() %}
           <div class="search-output-section">
-            <table class="search-input-items" border=1px>
-              <th class="search-output-section" scope="col">{{ key }}</th>
+            <table class="table search-input-items">
+              <thead classs="thead-dark">
+                <tr>
+                  <th class="search-output-section" scope="col">{{ key }}</th>
+                  <th class="search-output-section" scope="col">Bedrijf</th>
+                  <th class="search-output-section" scope="col">Titel</th>
+                  <th class="search-output-section" scope="col">Score</th>
+                </tr>
+              </thead>
               {% for hit in results[key] %}
                 <tr>
-                    <th class="search-output-key"> {{ hit['bedrijf'] }} </th>
-                    <td class="search-outut-value"> {{ hit['title'] }} </td>
-                    <!-- <td class="search-outut-value"> {{ hit['highlights'] }} </td> -->
-                    <td class="search-outut-value"> {{ hit['score'] }} </td>
+                  <th class="search-output-key" scope="row"> # </th>
+                  <td class="search-output-key"> {{ hit['bedrijf'] }} </td>
+                  <td class="search-outut-value"> {{ hit['title'] }} </td>
+                  <!-- <td class="search-outut-value"> {{ hit['highlights'] }} </td> -->
+                  <td class="search-outut-value"> {{ hit['score'] }} </td>
                 </tr>
               {% endfor %}
             </table>
@@ -42,7 +50,7 @@
       </div>
     </div>
     
-    <button class="btn btn-outline-info"><a href="{{ url_for('home') }}">Zoek opnieuw</a></button>
+    <button type="button" class="btn btn-outline-info"><a href="{{ url_for('home') }}"><span>Zoek opnieuw</span></a></button>
 
   </div>
 {% endblock content%}

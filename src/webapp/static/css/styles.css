@@ -92,20 +92,36 @@ h5 {
 }
 
 /* Search engine form styling */
-.content-wrapper {
+/* .content-wrapper {
   display: flex;
   justify-content: space-around;
   margin-bottom: 30px;
-}
+} */
 
 /* Search engine results styling */
 .search-engine-wrapper {
+  flex-direction: column;
   flex-basis: 70%;
 }
 
+.text-wrapper {
+  flex: 1;
+}
+
+.search-form-wrapper {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+/* .search-input-wrapper {
+  text-align: center;
+  width: fit-content;
+} */
+
 .search-ouput {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   text-align: center;
   align-items: center;
 }
