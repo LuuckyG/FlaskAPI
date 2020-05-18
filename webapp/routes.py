@@ -1,19 +1,28 @@
-from flask import request, render_template, url_for, flash, redirect, session
-from flask_login import current_user, login_user, logout_user, login_required
-from flask_admin.contrib.sqla import ModelView
-
 from webapp import app, db, bcrypt, admin
 from webapp.models import User, SearchQuery, SearchResult
-from webapp.forms import SearchForm, LoginForm
+from webapp.forms import LoginForm, RegistrationForm, SearchForm
 from webapp.static.model.textsim.search_index import index_searcher
 
+from flask import redirect, render_template, url_for, request, flash, session, jsonify
+from flask_login import login_user, current_user, logout_user, login_required
+from flask_admin.contrib.sqla import ModelView
+from werkzeug.exceptions import default_exceptions, HTTPException, InternalServerError
+from werkzeug.security import check_password_hash, generate_password_hash
 
 admin.add_view(ModelView(User, db.session))
 admin.add_view(ModelView(SearchQuery, db.session))
 admin.add_view(ModelView(SearchResult, db.session))
 
+# Ensure responses aren't cached
+@app.after_request
+def after_request(response):
+    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    response.headers["Expires"] = 0
+    response.headers["Pragma"] = "no-cache"
+    return response
 
 @app.route('/', methods=['GET', 'POST'])
+@login_required
 def index():
     form = SearchForm()
     return render_template('index.html', form=form)
@@ -27,13 +36,6 @@ def login():
     form = LoginForm()
     if form.validate_on_submit():
         # Query database for username
-
-        # user = User(username=form.username.data,
-        #             email='test@example.com',
-        #             password=form.password.data)
-        # login_user(user, remember=form.remember.data)
-        # return redirect(url_for("index"))
-
         user = User.query.filter_by(username=form.username.data).first()
         if user and bcrypt.check_password_hash(user.password, form.password.data):
             login_user(user, remember=form.remember.data)
@@ -54,11 +56,12 @@ def logout():
     # Redirect user to login form
     return redirect(url_for('index'))
 
-@app.route("/register", methods=["GET", "POST"])
+@app.route("/register")
 def register():
     """Register user"""
     if current_user.is_authenticated:
         return redirect(url_for('index'))
+
     form = RegistrationForm()
     if form.validate_on_submit():
         # Add user to database
@@ -73,6 +76,7 @@ def register():
     return render_template('register.html', title='Register', form=form)
 
 @app.route('/results', methods=['GET', 'POST'])
+@login_required
 def results(): 
     if request.method == 'POST':
         inputs = request.form
