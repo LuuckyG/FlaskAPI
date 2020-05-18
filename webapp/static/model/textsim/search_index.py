@@ -4,7 +4,7 @@ from whoosh import fields
 from whoosh.index import open_dir
 
 
-def index_searcher(dirname="src/model/textsim/indexdir", 
+def index_searcher(dirname="webapp/static/model/textsim/indexdir", 
                    query_string=None, 
                    top_n=5,
                    search_fields=['full_text', 

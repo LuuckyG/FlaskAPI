@@ -7,8 +7,8 @@ from flask import request, render_template, url_for, flash, redirect
 
 from webapp import app
 from webapp.forms import SearchForm
-from static.model.textgen.textgenrnn import textgenrnn
-from static.model.textsim.search_index import index_searcher
+from webapp.static.model.textgen.textgenrnn import textgenrnn
+from webapp.static.model.textsim.search_index import index_searcher
 
 
 model = None
