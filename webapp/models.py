@@ -1,4 +1,4 @@
-from src.webapp import db
+from webapp import db
 
 
 class SearchQuery(db.Model):

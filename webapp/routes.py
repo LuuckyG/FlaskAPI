@@ -5,10 +5,10 @@ import numpy as np
 from tensorflow.keras.models import load_model, model_from_json
 from flask import request, render_template, url_for, flash, redirect
 
-from src.webapp import app
-from src.webapp.forms import SearchForm
-from src.model.textgen.textgenrnn import textgenrnn
-from src.model.textsim.search_index import index_searcher
+from webapp import app
+from webapp.forms import SearchForm
+from static.model.textgen.textgenrnn import textgenrnn
+from static.model.textsim.search_index import index_searcher
 
 
 model = None
