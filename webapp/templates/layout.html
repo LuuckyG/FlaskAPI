@@ -5,15 +5,46 @@
   <meta charset='UTF-8'>
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <meta name="description" content="At Evolvalor we help innovative organizations increase their growth by providing hands-on services. Find out what we can do for your business.">
+  
   <link rel="icon" href="../static/images/evolvalor-faviconDonker.png">
   <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+  
   <title>Evolvalor | We Help Growing Innovative Businesses</title> 
 </head>
 
 <body>
-  <div class="nav-wrapper">
+
+  <nav class="navbar navbar-expand-md navbar-light bg-light border">
+    <div class="brand">
+      <img style="max-height: 50px" alt="logo evolvalor" src="../static/images/logo.png">
+    </div>
+    <button aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler" data-target="#navbar" data-toggle="collapse" type="button">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbar">
+        {% if current_user.is_authenticated %}
+            <ul class="navbar-nav mr-auto mt-2">
+                <li class="nav-item"><a href="tel:0031854014704"  style="color:#FFC809">Call +31 (0) 85 4014 704</a></li>
+            </ul>
+            <ul class="navbar-nav ml-auto mt-2">
+                <li class="nav-item"><a class="nav-link" href="/account">Account</a></li>
+                <li class="nav-item"><a class="nav-link" href="/logout">Log Out</a></li>
+            </ul>
+        {% else %}
+            <ul class="navbar-nav ml-auto mt-2">
+                <li class="nav-item"><a class="nav-link" href="/login">Log In</a></li>
+            </ul>
+        {% endif %}
+    </div>
+</nav>
+
+  <!-- <div class="nav-wrapper">
 
     <div class="left-side">
       <div class="brand">
@@ -52,7 +83,7 @@
 
     </div>
 
-  </div>
+  </div> -->
 
   <div class="content-wrapper">
     {% block content %}{% endblock %}
