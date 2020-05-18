@@ -1,5 +1,5 @@
 from webapp import app, db, bcrypt, admin
-from webapp.models import User, SearchQuery, SearchResult
+from webapp.models import User, SearchQuery, SearchResult, WBSO
 from webapp.forms import LoginForm, RegistrationForm, SearchForm
 from webapp.static.model.textsim.search_index import index_searcher
 
@@ -12,6 +12,8 @@ from werkzeug.security import check_password_hash, generate_password_hash
 admin.add_view(ModelView(User, db.session))
 admin.add_view(ModelView(SearchQuery, db.session))
 admin.add_view(ModelView(SearchResult, db.session))
+admin.add_view(ModelView(WBSO, db.session))
+
 
 # Ensure responses aren't cached
 @app.after_request

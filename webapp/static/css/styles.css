@@ -6,9 +6,14 @@
 }
 
 body {
+  font-family: "Lato regular, sans-serif";
+}
+
+.main {
   display: flex;
   flex-direction: column;
-  font-family: "Lato regular, sans-serif";
+  width: 80%;
+  margin: auto;
 }
 
 h1 {
@@ -31,68 +36,27 @@ h5 {
 }
 
 /* Navbar style */
-.nav-wrapper {
-  display: flex;
-  flex-wrap: wrap;
-  flex-basis: 80%;
-  justify-content: space-evenly;
+.navbar-nav {
   align-items: center;
-  padding: 20px;
 }
 
-.left-side {
-  flex: 2;
+.nav-item {
+  margin: 20px;
 }
 
-.brand {
+.form-group {
   display: flex;
-  align-content: center;
-  justify-content: space-evenly;
+  flex-direction: column;
 }
 
-.right-side {
-  display: flex;
-  flex: 4;
-  justify-content: center;
+.col-md-8 {
+  /* center contents */
+  margin: auto;
 }
 
-.nav-wrapper > .right-side > div {
-  margin-right: 20px;
-  text-transform: uppercase;
-  font-size: 0.9rem;
-}
-
-.nav-link-wrapper {
-  height: 22px;
-  border-bottom: 1px solid transparent;
-  transition: border-bottom 0.5s;
-}
-
-.active-nav-link {
-  border-bottom: 1px solid black;
-  font-weight: bold;
-}
-
-.active-nav-link a {
-  color: black !important;
-}
-
-.nav-link-wrapper a {
-  color: #8a8a8a;
-  text-decoration: none;
-  transition: color 0.5s;
-}
-
-.nav-link-wrapper:hover {
-  border-bottom: 1px solid black;
-}
-
-.nav-link-wrapper a:hover {
-  color: black;
-}
-
-#call:hover {
-  border-bottom: 1px solid #FFC809;
+.content-section {
+  padding: 10px 20px;
+  margin-bottom: 20px;
 }
 
 /* Search engine form styling */
@@ -117,6 +81,12 @@ h5 {
   display: flex;
   flex-direction: column;
   margin: auto;
+}
+
+.search-button {
+  align-items: center;
+  text-align: center;
+  width: inherit;
 }
 
 .search-ouput {
