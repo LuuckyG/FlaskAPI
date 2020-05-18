@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang='en'>
+
+<head>
+  <meta charset='UTF-8'>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="At Evolvalor we help innovative organizations increase their growth by providing hands-on services. Find out what we can do for your business.">
+  
+  <link rel="icon" href="../static/images/evolvalor-faviconDonker.png">
+  <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+  
+  <title>Evolvalor | We Help Growing Innovative Businesses</title> 
+</head>
+
+<body>
+  
+  <div class="main">
+    <nav class="navbar navbar-expand-md navbar-light">
+      <div class="brand">
+        <img style="max-height: 50px" alt="logo evolvalor" src="../static/images/logo.png">
+      </div>
+      <button aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler" data-target="#navbar" data-toggle="collapse" type="button">
+          <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbar">
+        <ul class="navbar-nav ml-auto mt-2">          
+          {% if current_user.is_authenticated %}
+            <li class="nav-item"><a class="nav-link" href="/logout">Log Out</a></li>
+          {% else %}
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('login') }}">Log In</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('register') }}">Register</a></li>
+          {% endif %}
+          <li class="nav-item"><a href="tel:0031854014704"  style="color:#FFC809">Call +31 (0) 85 4014 704</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <div class="row">
+      <div class="col-md-8">
+        {% with messages = get_flashed_messages(with_categories=True) %}
+          {% if messages %}
+              {% for category, message in messages %}
+                  <header>
+                      <div class="alert alert-{{ category }} border text-center" role="alert">
+                          {{ message }}
+                      </div>
+                  </header>
+              {% endfor %}
+          {% endif %}
+        {% endwith %}
+      </div>
+    </div>
+
+    <div class="content-wrapper">
+      {% block content %}{% endblock %}
+    </div>
+
+  </div>
+
+  <div class="footer-wrapper">
+    <div class="footer-contact-us">
+        <div class="footer-contact-us-text">
+          <h3 style="margin-bottom: 10px; text-align: center;"><span style="color: #ffffff;">So let’s&nbsp;<strong style="color: #fff;">talk</strong></span></h3>
+          <h5 style="color: #ffffff; text-align: center;">ABOUT YOUR&nbsp;<strong>AMBITIONS</strong></h5>
+        </div>
+
+        <div class="contact-btn"><button class="btn contact-btn" style="text-align: center; vertical-align: middle;"><a style="background-color:#ffffff; color:#ffc80a;" class="button btn btn-outline-warning btn-primary" href="/contact" title="">Contact</a></button></div>
+      </div>
+
+      <div class="footer-contact-wrapper">
+        <div class="footer-contact-image">
+          <img width="422" height="133" src="../static/images/logo_light.png" sizes="(max-width: 422px) 100vw, 422px">
+        </div>
+        <div class="footer-contact-text">
+          <p><span style="color: #ffffff;">Send us an e-mail at <a style="color:#FFC809" href="mailto:info@evolvalor.com">info@evolvalor.com</a> or call us on <a style="color:#FFC809" href="tel:+0031854014704">+31 (0) 85 4014 704</a> and make sure to follow us on </span><a style="color:#FFC809" href="#">LinkedIn </a></p>
+        </div>          
+      </div>    
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+</body>
+</html>

@@ -1,0 +1,62 @@
+{% extends "layout.html" %}
+{% block content %}
+  <div class="search-engine-wrapper">
+    <div class="text-wrapper">
+      <div class="section-header"><h1>WBSO Search Engine</h1></div>
+      <div class="section-content">Lorem ipsum dolor sit amet consectetur adipisicing elit. Id omnis inventore maxime, tempora tempore voluptate, quas ipsa repudiandae dolorum neque harum quibusdam? Maiores nemo dignissimos iusto velit, et aspernatur.</div>
+    </div>
+
+    <div class="search-form-wrapper">
+      <form class="search-form" method="POST" action="/results">
+        {{ form.hidden_tag() }}
+        <fieldset class="search-form-items form-group">
+          <legend class="search-form-legend">Informatie over de aanvraag</legend>
+          <div class="search-form-item form-group" id="form-project_titel">
+            {{ form.project_titel.label(class="form-control-label")}}
+            {{ form.project_titel(class="form-control form-control-lg")}}
+          </div>
+
+          <div class="search-form-item form-group" id="form-zwaartepunt">
+            {{ form.zwaartepunt.label(class="form-control-label")}}
+            {{ form.zwaartepunt(class="form-control form-control-lg")}}
+          </div>
+
+          <div class="search-form-item form-group" id="form-key_terms">
+            {{ form.key_terms.label(class="form-control-label")}}
+            {{ form.key_terms(class="form-control form-control-lg")}}
+          </div>
+
+          <div class="search-form-item form-group" id="form-aanleiding">
+            {{ form.aanleiding.label(class="form-control-label")}}
+            {{ form.aanleiding(class="form-control form-control-lg")}}
+          </div>
+
+          <div class="search-form-item form-group" id="form-t_knel">
+            {{ form.t_knel.label(class="form-control-label")}}
+            {{ form.t_knel(class="form-control form-control-lg")}}
+          </div>
+
+          <div class="search-form-item form-group" id="form-opl">
+            {{ form.opl.label(class="form-control-label")}}
+            {{ form.opl(class="form-control form-control-lg")}}
+          </div>
+
+          <div class="search-form-item form-group" id="form-prog">
+            {{ form.prog.label(class="form-control-label")}}
+            {{ form.prog(class="form-control form-control-lg")}}
+          </div>
+          
+          <div class="search-form-item form-group" id="form-nieuw">
+            {{ form.nieuw.label(class="form-control-label")}}
+            {{ form.nieuw(class="form-control form-control-lg")}}
+          </div>
+
+        </fieldset>
+        <div class="search-form-item search-button">
+          {{ form.submit(class="btn btn-outline-info")}}
+        </div>
+      </form>
+    </div>
+
+  </div>
+{% endblock content %}

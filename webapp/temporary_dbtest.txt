@@ -1,0 +1,11 @@
+query1 = SearchQuery(title='Nieuw platform', zwaartepunt='Programmatuur', key_terms='Software, python, innovatie')
+result1 = SearchResult(nr='A2019-01', title='Platform A', path='Airhub A2019-01.docx', bedrijf='AirHub', jaar='2019', 
+	zwaartepunt='Programmatuur', opdrachtgever='Evolvalor', 
+	full_text='Airhub BV is ontwikkelaar van aansturingssoftware van drones.',
+	aanleiding='Airhub BV is ontwikkelaar van aansturingssoftware van drones.',
+	t_knel='Airhub BV is ontwikkelaar van aansturingssoftware van drones.',
+	opl='Airhub BV is ontwikkelaar van aansturingssoftware van drones.',
+	prog='Python',
+	nieuw='Airhub BV is ontwikkelaar van aansturingssoftware van drones.',
+	score=8.34,
+	query_id=query1.id)

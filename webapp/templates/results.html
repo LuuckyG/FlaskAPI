@@ -1,0 +1,58 @@
+{% extends "layout.html" %}
+{% block content %}
+  <div class="search-engine-wrapper">
+    <div class="text-wrapper">
+      <div class="section-header"><h1>WBSO Search Engine</h1></div>
+      <div class="section-content">Lorem ipsum dolor sit amet consectetur adipisicing elit. Id omnis inventore maxime, tempora tempore voluptate, quas ipsa repudiandae dolorum neque harum quibusdam? Maiores nemo dignissimos iusto velit, et aspernatur.</div>
+    </div>
+
+    <div class="search-input-wrapper">
+      <h3 class="search-input-title search-heading">Zoektermen</h3>
+      <table class="table search-input-items">
+        {% for key, value in inputs.items() %}
+          {% if key not in ['csrf_token', 'submit'] %}
+            <tr>
+                <th class="search-input-key"> {{ key }} </th>
+                <td class="search-input-value"> {{ value }} </td>
+            </tr>
+            {% endif %}
+        {% endfor %}
+      </table>
+    </div>
+
+    <div class="search-output-wrapper">
+      <h3 class="search-output-title search-heading">Best overeenkomende documenten per sectie:</h3>
+
+      <div class="search-ouput">
+        {% for key in results.keys() %}
+          {% if results[key] %}
+            <div class="search-output-section">
+              <table class="table search-input-items">
+                <thead classs="thead-dark">
+                  <tr>
+                    <th class="search-output-section" scope="col">{{ key }}</th>
+                    <th class="search-output-section" scope="col">Bedrijf</th>
+                    <th class="search-output-section" scope="col">Titel</th>
+                    <th class="search-output-section" scope="col">Score</th>
+                  </tr>
+                </thead>
+                {% for hit in results[key] %}
+                  <tr>
+                    <th class="search-output-key" scope="row"> {{ loop.index0 + 1 }} </th>
+                    <td class="search-output-key"> {{ hit['bedrijf'] }} </td>
+                    <td class="search-outut-value"> {{ hit['title'] }} </td>
+                    <!-- <td class="search-outut-value"> {{ hit['highlights'] }} </td> -->
+                    <td class="search-outut-value"> {{ '%0.3f'| format(hit['score']) }} </td>
+                  </tr>
+                {% endfor %}
+              </table>
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+    
+    <a class="btn btn-outline-info" style="display: block;" href="{{ url_for('index') }}"><span>Zoek opnieuw</span></a>
+
+  </div>
+{% endblock content%}

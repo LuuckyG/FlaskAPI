@@ -1,0 +1,179 @@
+/* Master styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Lato regular, sans-serif";
+}
+
+.main {
+  display: flex;
+  flex-direction: column;
+  width: 80%;
+  margin: auto;
+}
+
+h1 {
+  color: rgb(37, 37, 37);
+  font-family: "Clarendon Text Pro";
+  font-size: 38px;
+  font-variant-ligatures: common-ligatures;
+  font-weight: 300;
+  letter-spacing: 2px;
+  text-size-adjust: 100%;
+  line-height: 45px;
+}
+
+h3 {
+  font-size: 22px;
+}
+
+h5 {
+  font-size: 18px;
+}
+
+/* Navbar style */
+.navbar-nav {
+  align-items: center;
+}
+
+.nav-item {
+  margin: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.col-md-8 {
+  /* center contents */
+  margin: auto;
+}
+
+.content-section {
+  padding: 10px 20px;
+  margin-bottom: 20px;
+}
+
+/* Search engine form styling */
+.content-wrapper {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 30px;
+}
+
+/* Search engine results styling */
+.search-engine-wrapper {
+  display: flex;
+  flex-direction: column;
+  flex-basis: 70%;
+}
+
+.text-wrapper {
+  padding: 20px;
+}
+
+.search-input-wrapper {
+  display: flex;
+  flex-direction: column;
+  margin: auto;
+}
+
+.search-button {
+  align-items: center;
+  text-align: center;
+  width: inherit;
+}
+
+.search-ouput {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  align-items: center;
+}
+
+.search-output-section {
+  flex: 1;
+  padding: 20px;
+  margin: 30px;
+}
+
+/* Footer styling */
+.footer-wrapper {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+}
+
+.footer-contact-us {
+  background-color: #FFC809;
+}
+
+.footer-contact-us-text {
+  margin-top: 35px;
+}
+
+.contact-btn {
+  margin-top: 20px;
+  margin-bottom: 15px;
+}
+
+.contact-btn > button {
+  border-radius: 5px;
+}
+
+.contact-btn > button > a {
+  margin: 15px 10px 15px 10px;
+  text-decoration: none;
+}
+
+.footer-contact-wrapper {
+  align-content: center;
+  background-color: #1f1f1f;
+}
+
+.footer-contact-image {
+  padding-top: 30px !important; 
+}
+
+.footer-contact-text {
+  padding: 15px;
+}
+
+@media screen and (max-width: 1200px) {
+  .nav-wrapper {
+    flex-direction: column;
+  }
+}
+
+@media screen and (max-width: 992px) {
+  .nav-wrapper {
+    flex-direction: row;
+  }
+  
+  .right-side {
+    flex-direction: column;
+    align-content: flex-end;
+    align-items: flex-end;
+  }
+
+  .nav-link-wrapper {
+    width: fit-content;
+  }
+
+  .nav-link-wrapper > a {
+    text-align: right;
+  }
+
+  .left-side {
+    text-align: left;
+  }
+
+  .search-engine-wrapper {
+    flex-basis: 90%;
+  }
+}
