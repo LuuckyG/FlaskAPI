@@ -1,9 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, PasswordField, BooleanField
 from wtforms.validators import DataRequired, Email, Length, EqualTo
-
-from webapp.models import User
-
+from webapp.users.models import User
 
 class LoginForm(FlaskForm):
     username = StringField('Username',
@@ -32,15 +30,3 @@ class RegistrationForm(FlaskForm):
         user = User.query.filter_by(email=email.data).first()
         if user:
             raise ValidationError('That email is taken. Please choose a different one.')
-
-
-class SearchForm(FlaskForm):
-    project_titel = StringField('Projecttitel')
-    zwaartepunt = StringField('Zwaartepunt')
-    key_terms = StringField('Key terms')
-    aanleiding = StringField('Aanleiding')
-    t_knel = StringField('Technische knelpunten')
-    opl = StringField('Oplossingsrichting')
-    prog = StringField('Programmeertalen, ontwikkelomgevingen en tools')
-    nieuw = StringField('Waarom technisch nieuw')
-    submit = SubmitField('Zoek aanvragen!')

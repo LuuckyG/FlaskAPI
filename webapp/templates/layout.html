@@ -23,7 +23,7 @@
   <div class="main">
     <nav class="navbar navbar-expand-md navbar-light">
       <div class="brand">
-        <img style="max-height: 50px" alt="logo evolvalor" src="../static/images/logo.png">
+        <a href="{{ url_for('main.index') }}"><img style="max-height: 50px" alt="logo evolvalor" src="../static/images/logo.png"></a>
       </div>
       <button aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler" data-target="#navbar" data-toggle="collapse" type="button">
           <span class="navbar-toggler-icon"></span>
@@ -31,10 +31,13 @@
       <div class="collapse navbar-collapse" id="navbar">
         <ul class="navbar-nav ml-auto mt-2">          
           {% if current_user.is_authenticated %}
-            <li class="nav-item"><a class="nav-link" href="/logout">Log Out</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('main.index') }}">Zoek</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('users.history', user_id=current_user.id) }}">Geschiedenis</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('users.account') }}">Account</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('users.logout') }}">Log Uit</a></li>
           {% else %}
-            <li class="nav-item"><a class="nav-link" href="{{ url_for('login') }}">Log In</a></li>
-            <li class="nav-item"><a class="nav-link" href="{{ url_for('register') }}">Register</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('users.login') }}">Log In</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('users.register') }}">Registreer</a></li>
           {% endif %}
           <li class="nav-item"><a href="tel:0031854014704"  style="color:#FFC809">Call +31 (0) 85 4014 704</a></li>
         </ul>
@@ -65,22 +68,22 @@
 
   <div class="footer-wrapper">
     <div class="footer-contact-us">
-        <div class="footer-contact-us-text">
-          <h3 style="margin-bottom: 10px; text-align: center;"><span style="color: #ffffff;">So let’s&nbsp;<strong style="color: #fff;">talk</strong></span></h3>
-          <h5 style="color: #ffffff; text-align: center;">ABOUT YOUR&nbsp;<strong>AMBITIONS</strong></h5>
-        </div>
-
-        <div class="contact-btn"><button class="btn contact-btn" style="text-align: center; vertical-align: middle;"><a style="background-color:#ffffff; color:#ffc80a;" class="button btn btn-outline-warning btn-primary" href="/contact" title="">Contact</a></button></div>
+      <div class="footer-contact-us-text">
+        <h3 style="margin-bottom: 10px; text-align: center;"><span style="color: #ffffff;">So let’s&nbsp;<strong style="color: #fff;">talk</strong></span></h3>
+        <h5 style="color: #ffffff; text-align: center;">ABOUT YOUR&nbsp;<strong>AMBITIONS</strong></h5>
       </div>
-
-      <div class="footer-contact-wrapper">
-        <div class="footer-contact-image">
-          <img width="422" height="133" src="../static/images/logo_light.png" sizes="(max-width: 422px) 100vw, 422px">
-        </div>
-        <div class="footer-contact-text">
-          <p><span style="color: #ffffff;">Send us an e-mail at <a style="color:#FFC809" href="mailto:info@evolvalor.com">info@evolvalor.com</a> or call us on <a style="color:#FFC809" href="tel:+0031854014704">+31 (0) 85 4014 704</a> and make sure to follow us on </span><a style="color:#FFC809" href="#">LinkedIn </a></p>
-        </div>          
-      </div>    
+  
+      <div class="contact-btn"><button class="btn contact-btn" style="text-align: center; vertical-align: middle;"><a style="background-color:#ffffff; color:#ffc80a;" class="button btn btn-outline-warning btn-primary" href="/contact" title="">Contact</a></button></div>
+    </div>
+  
+    <div class="footer-contact-wrapper">
+      <div class="footer-contact-image">
+        <img width="422" height="133" src="../static/images/logo_light.png" sizes="(max-width: 422px) 100vw, 422px">
+      </div>
+      <div class="footer-contact-text">
+        <p><span style="color: #ffffff;">Send us an e-mail at <a style="color:#FFC809" href="mailto:info@evolvalor.com">info@evolvalor.com</a> or call us on <a style="color:#FFC809" href="tel:+0031854014704">+31 (0) 85 4014 704</a> and make sure to follow us on </span><a style="color:#FFC809" href="#">LinkedIn </a></p>
+      </div>          
+    </div>  
   </div>
 
   <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>

@@ -1,5 +1,6 @@
-src/model/data/
-src/model/results/
+webapp/static/model/data/
+webapp/static/model/results/
 __pycache__/
 .idea/
 .vscode/
+webapp/webapp.db

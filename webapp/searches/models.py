@@ -1,23 +1,5 @@
 from datetime import datetime
-from flask_login import UserMixin
-from webapp import db, login_manager
-
-@login_manager.user_loader
-def load_user(user_id):
-    return User.query.get(int(user_id))
-
-
-class User(db.Model, UserMixin):
-    __tablename__ = 'user'
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(20), unique=True, nullable=False)
-    email = db.Column(db.String(120), unique=True, nullable=False)
-    password = db.Column(db.String(60), nullable=False)
-    searches = db.relationship('SearchQuery', backref='searched_by', lazy=True)
-
-    def __repr__(self):
-        return f"<User {self.username}>"
-
+from webapp import db
 
 class SearchQuery(db.Model):
     __tablename__ = 'search_query'
@@ -25,6 +7,7 @@ class SearchQuery(db.Model):
     title = db.Column(db.TEXT)
     zwaartepunt = db.Column(db.TEXT)
     key_terms = db.Column(db.TEXT)
+    date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     search_result = db.relationship('SearchResult', backref='query', lazy=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
@@ -49,6 +32,7 @@ class SearchResult(db.Model):
     prog = db.Column(db.TEXT)
     nieuw = db.Column(db.TEXT)
     score = db.Column(db.Float)
+    date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     query_id = db.Column(db.Integer, db.ForeignKey('search_query.id'), nullable=False)
     
     def __repr__(self):
@@ -75,4 +59,4 @@ class WBSO(db.Model):
     nieuw = db.Column(db.TEXT)
 
     def __repr__(self):
-        return f"Bedrijf: {self.bedrijf}\nTitel: {self.title}\nScore: {self.score}"
+        return f"Bedrijf: {self.bedrijf} - Titel: {self.title}"
