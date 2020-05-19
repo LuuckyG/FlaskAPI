@@ -9,14 +9,18 @@
     <div class="search-input-wrapper">
       <h3 class="search-input-title search-heading">Zoektermen</h3>
       <table class="table search-input-items">
-        {% for key, value in inputs.items() %}
-          {% if key not in ['csrf_token', 'submit'] %}
-            <tr>
-                <th class="search-input-key"> {{ key }} </th>
-                <td class="search-input-value"> {{ value }} </td>
-            </tr>
-            {% endif %}
-        {% endfor %}
+        <tr>
+            <th class="search-input-key"> Titel </th>
+            <td class="search-input-value"> {{ query.title }} </td>
+        </tr>
+        <tr>
+          <th class="search-input-key"> Zwaartepunt </th>
+          <td class="search-input-value"> {{ query.zwaartepunt }} </td>
+      </tr>
+      <tr>
+        <th class="search-input-key"> Key Terms </th>
+        <td class="search-input-value"> {{ query.key_terms }} </td>
+      </tr>
       </table>
     </div>
 

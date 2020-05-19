@@ -1,5 +1,6 @@
 from datetime import datetime
 from flask_login import UserMixin
+from flask_security import RoleMixin
 from webapp import db, login_manager
 from webapp.searches.models import SearchQuery
 
@@ -14,15 +15,16 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(20), unique=True, nullable=False)
     password = db.Column(db.String(60), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    email_confirmed_at = db.Column(db.DateTime())
-    num_searches = db.Column(db.Integer(), nullable=False, default=0)
+    created_on = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    last_online = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    num_searches = db.Column(db.Integer, nullable=False, default=0)
     last_searched = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-    active = db.Column('is_active', db.Boolean(), nullable=False, server_default='1')
+    status = db.Column(db.Boolean, nullable=False, server_default='1')
     roles = db.relationship('Role', secondary='user_roles')
     searches = db.relationship('SearchQuery', backref='searched_by', lazy=True)
 
     def __repr__(self):
-        return f"<User {self.username}>"
+        return f"{self.username}"
     
     def is_admin(self):
         return self.access == ACCESS['admin']
@@ -39,6 +41,6 @@ class Role(db.Model):
 
 class UserRoles(db.Model):
     __tablename__ = 'user_roles'
-    id = db.Column(db.Integer(), primary_key=True)
-    user_id = db.Column(db.Integer(), db.ForeignKey('user.id', ondelete='CASCADE'))
-    role_id = db.Column(db.Integer(), db.ForeignKey('roles.id', ondelete='CASCADE'))
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'))
+    role_id = db.Column(db.Integer, db.ForeignKey('roles.id', ondelete='CASCADE'))

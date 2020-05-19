@@ -16,6 +16,5 @@ def after_request(response):
 @main.route('/', methods=['GET', 'POST'])
 @login_required
 def index():
-    form = SearchForm()
-    return render_template('index.html', form=form)
+    return render_template('index.html')
 

@@ -1,8 +1,9 @@
 from webapp import db, admin, bcrypt
 from webapp.users.models import User
 from webapp.users.forms import LoginForm, RegistrationForm
-from webapp.searches.models import SearchQuery, SearchResult, WBSO
+from webapp.searches.models import SearchQuery, SearchResult, SearchCollection, WBSO
 
+from datetime import datetime
 from flask import Blueprint, current_app, redirect, render_template, url_for, request, flash, session
 from flask_user import roles_required, UserManager
 from flask_login import login_user, current_user, logout_user, login_required
@@ -15,8 +16,8 @@ from flask_admin.contrib.sqla import ModelView
 admin.add_view(ModelView(User, db.session))
 admin.add_view(ModelView(SearchQuery, db.session))
 admin.add_view(ModelView(SearchResult, db.session))
+admin.add_view(ModelView(SearchCollection, db.session))
 admin.add_view(ModelView(WBSO, db.session))
-
 
 users = Blueprint('users', __name__)
 
@@ -36,6 +37,11 @@ def login():
         if user and bcrypt.check_password_hash(user.password, form.password.data):
             session['email'] = user.email
             login_user(user, remember=form.remember.data)
+
+            # Update online status
+            user.status = True
+            db.session.commit()
+
             next_page = request.args.get('next')
             return redirect(next_page) if next_page else redirect(url_for("main.index"))
         else:
@@ -46,12 +52,17 @@ def login():
 def logout():
     """Log user out"""
 
+    # Update last seen online and change status to offline
+    current_user.last_online = datetime.utcnow()
+    current_user.status = False
+    db.session.commit()
+
     # Forget any user_id
     session.clear()
     logout_user()
 
     # Redirect user to login form
-    return redirect(url_for('main.index'))
+    return redirect(url_for('users.login'))
 
 @users.route("/register", methods=['GET', 'POST'])
 def register():
@@ -69,7 +80,7 @@ def register():
 
         # Redirect user to home page
         flash(f'Account created for {form.username.data}!', 'success')
-        return redirect(url_for("main.index"))
+        return redirect(url_for("users.login"))
     return render_template('register.html', title='Register', form=form)
 
 @users.route('/history/<int:user_id>', methods=['GET', 'POST'])
@@ -77,11 +88,18 @@ def register():
 def history(user_id): 
     if current_user.is_authenticated:
         return render_template('history.html', user_id=current_user.id)
-    return redirect(url_for('main.index'))
+    return redirect(url_for('users.login'))
 
 @users.route('/account', methods=['GET', 'POST'])
 @login_required
 def account(): 
     if current_user.is_authenticated:
         return render_template('account.html')
-    return redirect(url_for('main.index'))
+    return redirect(url_for('users.login'))
+
+@users.route('/admin', methods=['GET', 'POST'])
+@login_required
+def admin(): 
+    if current_user.is_authenticated:
+        return render_template('admin/index.html')
+    return redirect(url_for('users.login'))

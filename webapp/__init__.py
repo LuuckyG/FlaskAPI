@@ -29,11 +29,11 @@ def create_app(config_class=Config):
 
     from webapp.main.routes import main
     from webapp.users.routes import users
-    from webapp.searches.routes import results_bp
+    from webapp.searches.routes import searches
 
     app.register_blueprint(main)
     app.register_blueprint(users)
-    app.register_blueprint(results_bp)
+    app.register_blueprint(searches)
 
     # with app.app_context():
     #     db.drop_all()
