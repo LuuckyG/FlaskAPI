@@ -1,3 +1,6 @@
+import rq
+import redis
+
 from datetime import datetime
 from flask import current_app
 from flask_login import UserMixin
@@ -6,6 +9,15 @@ from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 
 from webapp import db, login_manager
 from webapp.searches.models import SearchQuery
+
+
+ACCESS = {
+    'guest': 0,
+    'user': 1,
+    'moderator': 2,
+    'admin': 3
+}
+
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -23,6 +35,7 @@ class User(db.Model, UserMixin):
     num_searches = db.Column(db.Integer, nullable=False, default=0)
     last_searched = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     status = db.Column(db.Boolean, nullable=False, server_default='1')
+    tasks = db.relationship('Task', backref='user', lazy='dynamic')
     roles = db.relationship('Role', secondary='user_roles')
     searches = db.relationship('SearchQuery', backref='searched_by', lazy=True)
 
@@ -49,10 +62,14 @@ class User(db.Model, UserMixin):
         return User.query.get(user_id)
 
 
-class Role(db.Model):
+class Role(db.Model, RoleMixin):
     __tablename__ = 'roles'
     id = db.Column(db.Integer(), primary_key=True)
     name = db.Column(db.String(50), unique=True)
+    description = db.Column(db.String(255))
+
+    def __str__(self):
+        return self.name
 
 
 class UserRoles(db.Model):
@@ -60,3 +77,23 @@ class UserRoles(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'))
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id', ondelete='CASCADE'))
+
+
+class Task(db.Model):
+    __tablename__ = 'task'
+    id = db.Column(db.String(36), primary_key=True)
+    name = db.Column(db.String(128), index=True)
+    description = db.Column(db.String(128))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    complete = db.Column(db.Boolean, default=False)
+
+    def get_rq_job(self):
+        try:
+            rq_job = rq.job.Job.fetch(self.id, connection=current_app.redis)
+        except (redis.exceptions.RedisError, rq.exceptions.NoSuchJobError):
+            return None
+        return rq_job
+
+    def get_progress(self):
+        job = self.get_rq_job()
+        return job.meta.get('progress', 0) if job is not None else 100

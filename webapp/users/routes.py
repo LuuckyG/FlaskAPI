@@ -1,4 +1,5 @@
 from webapp import db, admin, bcrypt, mail
+from webapp.users.utils import send_reset_email
 from webapp.users.models import User
 from webapp.users.forms import LoginForm, RegistrationForm, RequestResetForm, ResetPasswordForm
 from webapp.searches.models import SearchQuery, SearchResult, SearchCollection, WBSO
@@ -6,8 +7,6 @@ from webapp.searches.models import SearchQuery, SearchResult, SearchCollection, 
 from datetime import datetime
 from flask import (Blueprint, current_app, redirect, 
                     render_template, url_for, request, flash, session)
-from flask_mail import Message
-from flask_user import roles_required, UserManager
 from flask_login import login_user, current_user, logout_user, login_required
 from werkzeug.exceptions import default_exceptions, HTTPException, InternalServerError
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -24,9 +23,6 @@ admin.add_view(ModelView(WBSO, db.session))
 
 users = Blueprint('users', __name__)
 
-
-# Setup Flask-User and specify the User data-model
-# user_manager = UserManager(current_app, db, User)
 
 @users.route("/login", methods=["GET", "POST"])
 def login():
@@ -52,6 +48,7 @@ def login():
             flash('Login Unsuccesful. Please check username and password', 'danger')
     return render_template("login.html", title='Login', form=form)
 
+
 @users.route("/logout")
 def logout():
     """Log user out"""
@@ -67,6 +64,7 @@ def logout():
 
     # Redirect user to login form
     return redirect(url_for('users.login'))
+
 
 @users.route("/register", methods=['GET', 'POST'])
 def register():
@@ -87,12 +85,14 @@ def register():
         return redirect(url_for("users.login"))
     return render_template('register.html', title='Register', form=form)
 
+
 @users.route('/history/<int:user_id>', methods=['GET', 'POST'])
 @login_required
 def history(user_id): 
     if current_user.is_authenticated:
         return render_template('history.html', user_id=current_user.id)
     return redirect(url_for('users.login'))
+
 
 @users.route('/account', methods=['GET', 'POST'])
 @login_required
@@ -101,19 +101,6 @@ def account():
         return render_template('account.html')
     return redirect(url_for('users.login'))
 
-
-def send_reset_email(user):
-    token = user.get_reset_token()
-    msg = Message('Password Reset Request', 
-                  sender='noreply@demo.com', 
-                  recipients=[user.email])
-    
-    msg.body = f""" To reset your password, visit the following link:
-{url_for('users.reset_token', token=token, _external=True)}
-
-If you did not make this request, then simply ignore this email and no changes will be made.
-"""
-    mail.send(msg)
 
 @users.route("/reset_password", methods=["GET", "POST"])
 def reset_request():
@@ -129,6 +116,7 @@ def reset_request():
         return redirect(url_for('users.login'))
 
     return render_template('reset_request.html', form=form) 
+
 
 @users.route("/reset_password/<token>", methods=["GET", "POST"])
 def reset_token(token):
@@ -152,6 +140,7 @@ def reset_token(token):
         flash(f'Your password has been updated! You are now able to log in.', 'success')
         return redirect(url_for("users.login"))
     return render_template('reset_token.html', form=form)
+
 
 @users.route('/admin', methods=['GET', 'POST'])
 @login_required
