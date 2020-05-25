@@ -16,11 +16,10 @@ class Config:
     # Flask-Mail SMTP server settings
     MAIL_SERVER = 'smtp.googlemail.com'
     MAIL_PORT = 587
-    MAIL_USE_SSL = True
-    MAIL_USE_TLS = False
+    MAIL_USE_TLS = True
     MAIL_USERNAME = os.environ.get('EMAIL_USER')
     MAIL_PASSWORD = os.environ.get('EMAIL_PASS')
-    MAIL_DEFAULT_SENDER = '"MyApp" <noreply@example.com>'
+    MAIL_DEFAULT_SENDER = '"Evolvalor WBSO Tool" <noreply@example.com>'
 
     # # Flask-User settings
     # USER_APP_NAME = "WBSO Search Engine"
