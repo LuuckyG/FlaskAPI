@@ -1,4 +1,6 @@
 import os
+import rq
+from redis import Redis
 
 from flask import Flask
 from flask_mail import Mail
@@ -29,6 +31,7 @@ def create_app(config_class=Config):
     """
     Create Flask application from config object.
     """
+
     app = Flask(__name__)
     app.config.from_object(Config)
 
@@ -37,24 +40,22 @@ def create_app(config_class=Config):
     admin.init_app(app)
     bcrypt.init_app(app)
     migrate.init_app(app, db)
-    
     login_manager.init_app(app)
+    
+    app.redis = Redis.from_url(app.config['REDIS_URL'])
+    app.task_queue = rq.Queue('webapp-users-tasks', connection=app.redis)
 
     from webapp.main.routes import main
-    from webapp.users.routes import users
-    from webapp.searches.routes import searches
-    from webapp.errors.handlers import errors
-
     app.register_blueprint(main)
-    app.register_blueprint(users)
-    app.register_blueprint(searches)
-    app.register_blueprint(errors)
 
-    # # Reset database
-    # TODO: Add database migrations functionality
-    # with app.app_context():
-    #     db.drop_all()
-    #     db.create_all()
+    from webapp.users.routes import users
+    app.register_blueprint(users)
+
+    from webapp.searches.routes import searches
+    app.register_blueprint(searches)
+
+    from webapp.errors.handlers import errors
+    app.register_blueprint(errors)
 
     # if not app.debug:
     #     if app.config['MAIL_SERVER']:
