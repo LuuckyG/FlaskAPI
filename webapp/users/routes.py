@@ -1,10 +1,11 @@
 from webapp import db, admin, bcrypt
 from webapp.users.models import User
-from webapp.users.forms import LoginForm, RegistrationForm
+from webapp.users.forms import LoginForm, RegistrationForm, RequestResetForm, ResetPasswordForm
 from webapp.searches.models import SearchQuery, SearchResult, SearchCollection, WBSO
 
 from datetime import datetime
-from flask import Blueprint, current_app, redirect, render_template, url_for, request, flash, session
+from flask import (Blueprint, current_app, redirect, 
+                    render_template, url_for, request, flash, session)
 from flask_user import roles_required, UserManager
 from flask_login import login_user, current_user, logout_user, login_required
 from werkzeug.exceptions import default_exceptions, HTTPException, InternalServerError
@@ -19,7 +20,9 @@ admin.add_view(ModelView(SearchResult, db.session))
 admin.add_view(ModelView(SearchCollection, db.session))
 admin.add_view(ModelView(WBSO, db.session))
 
+
 users = Blueprint('users', __name__)
+
 
 # Setup Flask-User and specify the User data-model
 # user_manager = UserManager(current_app, db, User)
@@ -96,6 +99,39 @@ def account():
     if current_user.is_authenticated:
         return render_template('account.html')
     return redirect(url_for('users.login'))
+
+
+def send_reset_email(user):
+    pass
+
+@users.route("/reset_password", methods=["GET", "POST"])
+def reset_request():
+    """Request password reset"""
+    if current_user.is_authenticated:
+        return redirect(url_for('main.index'))
+
+    form = RequestResetForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(email=form.email.data).first()
+        send_reset_email(user)
+        flash('An reset password email has been send.', 'info')
+        return redirect(url_for('users.login'))
+
+    return render_template('reset_request.html', form=form) 
+
+@users.route("/reset_password/<int:token>", methods=["GET", "POST"])
+def reset_token(token):
+    """Reset password"""
+    if current_user.is_authenticated:
+        return redirect(url_for('main.index'))
+    
+    user = User.verify_reset_token(token)
+    if user is None:
+        flash('That is an invalid or expired token.', 'warning')
+        return redirect(url_for('users.reset_request'))
+
+    form = ResetPasswordForm()
+    return render_template('reset_token.html', form=form)
 
 @users.route('/admin', methods=['GET', 'POST'])
 @login_required

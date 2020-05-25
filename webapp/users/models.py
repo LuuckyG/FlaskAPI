@@ -1,7 +1,9 @@
 from datetime import datetime
 from flask_login import UserMixin
 from flask_security import RoleMixin
-from webapp import db, login_manager
+from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
+
+from webapp import app, db, login_manager
 from webapp.searches.models import SearchQuery
 
 @login_manager.user_loader
@@ -31,6 +33,19 @@ class User(db.Model, UserMixin):
     
     def allowed(self, access_level):
         return self.access >= access_level
+    
+    def get_reset_token(self, expires_sec=1800):
+        s = Serializer(app.config['SECRET_KEY'], expires_sec)
+        return s.dumps({'user_id': self.id}).decode('utf-8')
+    
+    @staticmethod
+    def verify_reset_token(token):
+        s = Serializer(app.config['SECRET_KEY'], expires_sec)
+        try:
+            user_id = s.loads(token)['user_id']
+        except:
+            return None
+        return User.query.get(user_id)
 
 
 class Role(db.Model):
