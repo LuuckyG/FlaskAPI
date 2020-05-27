@@ -20,7 +20,6 @@ mail = Mail()
 db = SQLAlchemy()
 bcrypt = Bcrypt()
 migrate = Migrate()
-admin = Admin(template_mode='bootstrap3')
 
 login_manager = LoginManager()
 login_manager.login_view = 'users.login'
@@ -37,25 +36,27 @@ def create_app(config_class=Config):
 
     db.init_app(app)
     mail.init_app(app)
-    admin.init_app(app)
     bcrypt.init_app(app)
     migrate.init_app(app, db)
     login_manager.init_app(app)
-    
+
     app.redis = Redis.from_url(app.config['REDIS_URL'])
     app.task_queue = rq.Queue('webapp-users-tasks', connection=app.redis)
 
     from webapp.main.routes import main
-    app.register_blueprint(main)
-
-    from webapp.users.routes import users
-    app.register_blueprint(users)
-
-    from webapp.searches.routes import searches
-    app.register_blueprint(searches)
-
+    from webapp.users.routes import users 
+    from webapp.admins.routes import admins       
+    from webapp.searches.routes import searches    
     from webapp.errors.handlers import errors
+
+    app.register_blueprint(main)
+    app.register_blueprint(users)
+    app.register_blueprint(admins)
+    app.register_blueprint(searches)
     app.register_blueprint(errors)
+
+    from webapp.admins.views import init_admin
+    init_admin(app, db)
 
     # if not app.debug:
     #     if app.config['MAIL_SERVER']:

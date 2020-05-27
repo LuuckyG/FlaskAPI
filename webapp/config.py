@@ -22,10 +22,3 @@ class Config:
     MAIL_PASSWORD = os.environ.get('EMAIL_PASS')
     ADMINS = os.environ.get('ADMINS')
     MAIL_DEFAULT_SENDER = os.environ.get('MAIL_DEFAULT_SENDER')
-
-    # # Flask-User settings
-    # USER_APP_NAME = "WBSO Search Engine"
-    # USER_ENABLE_EMAIL = True
-    # USER_ENABLE_USERNAME = False
-    # USER_EMAIL_SENDER_NAME = USER_APP_NAME
-    # USER_EMAIL_SENDER_EMAIL = "noreply@example.com"
