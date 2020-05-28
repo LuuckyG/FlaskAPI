@@ -3,6 +3,9 @@
 {% block content %}
     <div class="search-engine-wrapper">
         <div class="section-header"><h1>You don't have permission to do that. (403)</h1></div>
-        <div class="section-content"><p>Please check your account and try again.</p></div>
+        <div class="section-content">
+            <p>Please check your account and try again.</br>
+            <a href="{{ url_for('main.index') }}"> Back to homepage.</a></p>
+        </div>
     </div>>
 {% endblock content %}
