@@ -4,7 +4,9 @@ import redis
 from datetime import datetime
 from flask import current_app
 from flask_login import UserMixin
-from flask_security import RoleMixin
+from sqlalchemy import (Boolean, Integer, String, 
+    Column, ForeignKey, DateTime)
+from sqlalchemy.orm import backref, relationship
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 
 from webapp import db, login_manager
@@ -26,18 +28,18 @@ def load_user(user_id):
 
 class User(db.Model, UserMixin):
     __tablename__ = 'user'
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(20), unique=True, nullable=False)
-    password = db.Column(db.String(60), nullable=False)
-    email = db.Column(db.String(120), unique=True, nullable=False)
-    created_on = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-    last_online = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-    num_searches = db.Column(db.Integer, nullable=False, default=0)
-    last_searched = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-    status = db.Column(db.Boolean, nullable=False, server_default='1')
-    tasks = db.relationship('Task', backref='user', lazy='dynamic')
-    roles = db.relationship('Role', secondary='user_roles')
-    searches = db.relationship('SearchQuery', backref='searched_by', lazy=True)
+    id = Column(Integer, primary_key=True)
+    username = Column(String(20), unique=True, nullable=False)
+    password = Column(String(60), nullable=False)
+    email = Column(String(120), unique=True, nullable=False)
+    created_on = Column(DateTime, nullable=False, default=datetime.utcnow)
+    last_online = Column(DateTime, nullable=False, default=datetime.utcnow)
+    num_searches = Column(Integer, nullable=False, default=0)
+    last_searched = Column(DateTime, nullable=False, default=datetime.utcnow)
+    status = Column(Boolean(), nullable=False, server_default='1')
+    access = Column(Integer(), nullable=False, default=ACCESS['user'])
+    tasks = relationship('Task', backref='user', lazy='dynamic')
+    searches = relationship('SearchQuery', backref='searched_by', lazy=True)
 
     def __repr__(self):
         return f"{self.username}"
@@ -62,30 +64,13 @@ class User(db.Model, UserMixin):
         return User.query.get(user_id)
 
 
-class Role(db.Model, RoleMixin):
-    __tablename__ = 'roles'
-    id = db.Column(db.Integer(), primary_key=True)
-    name = db.Column(db.String(50), unique=True)
-    description = db.Column(db.String(255))
-
-    def __str__(self):
-        return self.name
-
-
-class UserRoles(db.Model):
-    __tablename__ = 'user_roles'
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'))
-    role_id = db.Column(db.Integer, db.ForeignKey('roles.id', ondelete='CASCADE'))
-
-
 class Task(db.Model):
     __tablename__ = 'task'
-    id = db.Column(db.String(36), primary_key=True)
-    name = db.Column(db.String(128), index=True)
-    description = db.Column(db.String(128))
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    complete = db.Column(db.Boolean, default=False)
+    id = Column(String(36), primary_key=True)
+    name = Column(String(128), index=True)
+    description = Column(String(128))
+    user_id = Column(Integer, ForeignKey('user.id'))
+    complete = Column(Boolean, default=False)
 
     def get_rq_job(self):
         try:
