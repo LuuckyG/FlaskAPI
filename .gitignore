@@ -3,5 +3,6 @@ webapp/static/model/results/
 __pycache__/
 .idea/
 .vscode/
+logs/
 webapp/webapp.db
 .flaskenv
