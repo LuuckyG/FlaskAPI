@@ -1,9 +1,13 @@
 import os
+basedir = os.path.abspath(os.path.dirname(__file__))
 
 class Config:
     """ Flask application config """
     
     # Flask settings
+    DEBUG = False
+    TESTING = False
+    CSRF_ENABLED = os.environ.get('CSRF_ENABLED')
     SECRET_KEY = os.environ.get('SECRET_KEY')
     REDIS_URL = os.environ.get('REDIS_URL') or 'redis://'
 
@@ -22,3 +26,22 @@ class Config:
     MAIL_PASSWORD = os.environ.get('EMAIL_PASS')
     ADMINS = os.environ.get('ADMINS')
     MAIL_DEFAULT_SENDER = os.environ.get('MAIL_DEFAULT_SENDER')
+
+
+class TestingConfig(Config):
+    TESTING = True
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'test.db')
+
+
+class ProductionConfig(Config):
+    DEBUG = False
+
+
+class StagingConfig(Config):
+    DEVELOPMENT = True
+    DEBUG = True
+
+
+class DevelopmentConfig(Config):
+    DEVELOPMENT = True
+    DEBUG = True
