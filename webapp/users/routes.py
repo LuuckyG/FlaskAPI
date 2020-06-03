@@ -77,20 +77,16 @@ def register():
     return render_template('register.html', title='Register', form=form)
 
 
-@users.route('/history/<int:user_id>', methods=['GET', 'POST'])
+@users.route('/history', methods=['GET', 'POST'])
 @login_required
-def history(user_id): 
-    if current_user.is_authenticated:
-        return render_template('history.html', user_id=current_user.id)
-    return redirect(url_for('users.login'))
+def history(): 
+    return render_template('history.html')
 
 
 @users.route('/account', methods=['GET', 'POST'])
 @login_required
 def account(): 
-    if current_user.is_authenticated:
-        return render_template('account.html')
-    return redirect(url_for('users.login'))
+    return render_template('account.html')
 
 
 @users.route("/reset_password", methods=["GET", "POST"])
