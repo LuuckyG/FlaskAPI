@@ -4,6 +4,7 @@ import redis
 from datetime import datetime
 from flask import current_app
 from flask_login import UserMixin
+from flask_bcrypt import generate_password_hash, check_password_hash
 from sqlalchemy import (Boolean, Integer, String, 
     Column, ForeignKey, DateTime)
 from sqlalchemy.orm import backref, relationship
@@ -43,6 +44,12 @@ class User(db.Model, UserMixin):
 
     def __repr__(self):
         return f"{self.username}"
+
+    def set_password(self, password):
+        self.password = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self.password, password)
     
     def is_admin(self):
         return self.access == ACCESS['admin']
