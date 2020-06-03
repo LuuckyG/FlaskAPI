@@ -8,7 +8,6 @@ from flask_admin import Admin
 from flask_bcrypt import Bcrypt
 from flask_migrate import Migrate
 from flask_login import LoginManager
-# from flask_whooshee import Whooshee
 from flask_sqlalchemy import SQLAlchemy
 
 import logging
@@ -87,10 +86,10 @@ def create_app(config_class=Config):
                                         backupCount=10)
         file_handler.setFormatter(logging.Formatter(
             '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'))
-        file_handler.setLevel(logging.INFO)
+        file_handler.setLevel(logging.DEBUG)
         app.logger.addHandler(file_handler)
 
-        app.logger.setLevel(logging.INFO)
+        app.logger.setLevel(logging.DEBUG)
         app.logger.info('Evolvalor WBSO Tool')
 
     return app

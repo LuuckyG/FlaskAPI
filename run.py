@@ -11,4 +11,6 @@ def make_shell_context():
             'SearchResult': SearchResult, 'WBSO': WBSO}
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True,
+            host=app.config.get("HOST", "localhost"),
+            port=app.config.get("PORT", 5000))
