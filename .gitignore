@@ -1,10 +1,15 @@
 webapp/static/model/data/
 webapp/static/model/results/
+
 __pycache__/
+
 .idea/
 .vscode/
 logs/
+
 webapp/webapp.db
 webapp/test.db
+
 .flaskenv
 .coverage
+htmlcov/
