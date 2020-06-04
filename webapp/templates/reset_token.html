@@ -3,36 +3,9 @@
 {% block content %}
     <div class="content-section">
         <form action="" method="post">
+            <legend>Reset Password</legend>
             {{ form.hidden_tag() }}
             <fieldset class="form-group">
-                <div class="form-group">
-                    {{ form.username.label(class="form-control-label") }}
-
-                    {% if form.username.errors %}
-                        {{ form.username(class="form-control form-control-lg is-invalid") }}
-                        <div class="invalid-feedback">
-                            {% for error in form.username.errors %}
-                                <span>{{ error }}</span>
-                            {% endfor %}
-                        </div>
-                    {% else %}
-                        {{ form.username(class="form-control form-control-lg") }}
-                    {% endif %}                    
-                </div>
-                <div class="form-group">
-                    {{ form.email.label(class="form-control-label") }}
-                    
-                    {% if form.email.errors %}
-                        {{ form.email(class="form-control form-control-lg is-invalid") }}
-                        <div class="invalid-feedback">
-                            {% for error in form.email.errors %}
-                                <span>{{ error }}</span>
-                            {% endfor %}
-                        </div>
-                    {% else %}
-                        {{ form.email(class="form-control form-control-lg") }}
-                    {% endif %}
-                </div>
                 <div class="form-group">
                     {{ form.password.label(class="form-control-label") }}
                     {% if form.password.errors %}
@@ -64,11 +37,5 @@
                 {{ form.submit(class="btn btn-outline-info") }}
             </div>
         </form>
-        <div class="">
-            <small class="text-muted">
-                Already Have An Account? <a class="ml-2" href="{{ url_for('users.login') }}">Log In</a>
-            </small>
-        </div>        
     </div>
-
 {% endblock content %}

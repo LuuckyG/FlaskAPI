@@ -1,1 +1,0 @@
-{"rnn_layers": 3, "rnn_size": 128, "rnn_bidirectional": false, "max_length": 5, "max_words": 10000, "dim_embeddings": 100, "word_level": true, "single_text": true, "name": "textgenrnn", "results_dir": "results\\word_l5_d3_w128_12-04", "is_csv": true}
