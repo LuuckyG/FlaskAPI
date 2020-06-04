@@ -7,8 +7,8 @@ from webapp.tests.test_basic import BasicTest
 from webapp.users.models import User, Task
 
 
-class TestUser(BasicTest):
-    """Unittest case for all user related functions."""
+class TestUserViews(BasicTest):
+    """Unittest case for all user related functions and views."""
 
     # Helper functions
     def register(self, client, username, email, password, confirm_password, access=1):
