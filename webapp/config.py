@@ -16,9 +16,10 @@ class Config(object):
     CSRF_ENABLED = os.environ.get('CSRF_ENABLED')
     SECRET_KEY = os.environ.get('SECRET_KEY')
     REDIS_URL = os.environ.get('REDIS_URL') or 'redis://'
+    LOG_TO_STDOUT = os.environ.get('LOG_TO_STDOUT')
 
-    # Flask-SQLAlchemy settings
-    SQLALCHEMY_DATABASE_URI = os.environ.get('SQLALCHEMY_DATABASE_URI')
+    # SQL settings
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     # Flask-Admin settings
