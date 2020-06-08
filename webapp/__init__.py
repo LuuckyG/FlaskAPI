@@ -4,7 +4,6 @@ from redis import Redis
 
 from flask import Flask
 from flask_mail import Mail
-from flask_admin import Admin
 from flask_bcrypt import Bcrypt
 from flask_migrate import Migrate
 from flask_login import LoginManager
@@ -44,14 +43,12 @@ def create_app(config_class=Config):
     # app.task_queue = rq.Queue('webapp-tasks', connection=app.redis)
 
     from webapp.main.routes import main
-    from webapp.users.routes import users 
-    # from webapp.admins.routes import admins   
+    from webapp.users.routes import users
     from webapp.searches.routes import searches    
     from webapp.errors.handlers import errors
 
     app.register_blueprint(main)
     app.register_blueprint(users)
-    # app.register_blueprint(admins)
     app.register_blueprint(searches)
     app.register_blueprint(errors)
 
