@@ -12,7 +12,7 @@ class Config(object):
     DEBUG = False
     TESTING = False
     HOST = os.environ.get('HOST') or 'localhost'
-    PORT = int(os.environ.get('PORT')) or 5000
+    PORT = int(os.environ.get('PORT') or 5000) 
     CSRF_ENABLED = os.environ.get('CSRF_ENABLED')
     SECRET_KEY = os.environ.get('SECRET_KEY')
     REDIS_URL = os.environ.get('REDIS_URL') or 'redis://'

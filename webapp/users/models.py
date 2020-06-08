@@ -31,7 +31,7 @@ class User(db.Model, UserMixin):
     __tablename__ = 'user'
     id = Column(Integer, primary_key=True)
     username = Column(String(20), unique=True, nullable=False)
-    password = Column(String(60), nullable=False)
+    password = Column(String(255), nullable=False)
     email = Column(String(120), unique=True, nullable=False)
     created_on = Column(DateTime, nullable=False, default=datetime.utcnow)
     last_online = Column(DateTime, nullable=False, default=datetime.utcnow)
