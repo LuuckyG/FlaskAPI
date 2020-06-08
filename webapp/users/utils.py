@@ -1,6 +1,8 @@
 from flask_mail import Message
 from flask import url_for
 
+from webapp import mail
+
 
 def send_reset_email(user):
     token = user.get_reset_token()

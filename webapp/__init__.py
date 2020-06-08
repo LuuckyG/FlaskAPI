@@ -41,11 +41,11 @@ def create_app(config_class=Config):
     login_manager.init_app(app)
 
     # app.redis = Redis.from_url(app.config['REDIS_URL'])
-    # app.task_queue = rq.Queue('webapp-users-tasks', connection=app.redis)
+    # app.task_queue = rq.Queue('webapp-tasks', connection=app.redis)
 
     from webapp.main.routes import main
     from webapp.users.routes import users 
-    from webapp.admins.routes import admins       
+    # from webapp.admins.routes import admins   
     from webapp.searches.routes import searches    
     from webapp.errors.handlers import errors
 
