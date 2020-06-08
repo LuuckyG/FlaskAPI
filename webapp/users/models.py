@@ -4,11 +4,11 @@ import redis
 from datetime import datetime
 from flask import current_app
 from flask_login import UserMixin
-from flask_bcrypt import generate_password_hash, check_password_hash
 from sqlalchemy import (Boolean, Integer, String, 
     Column, ForeignKey, DateTime)
 from sqlalchemy.orm import backref, relationship
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
+from werkzeug.security import generate_password_hash, check_password_hash
 
 from webapp import db, login_manager
 from webapp.searches.models import SearchQuery
