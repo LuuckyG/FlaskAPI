@@ -67,7 +67,7 @@ def results():
                         date=datetime.utcnow(),
                         query_id=query.id,
                         search_collection_id=sc.id)
-                db.session.add(r)
-                db.session.commit()
+                # db.session.add(r)
+                # db.session.commit()
 
     return render_template('results.html', query=query, results=results)
