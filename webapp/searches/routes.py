@@ -4,6 +4,7 @@ from flask import Blueprint, render_template, redirect, url_for, request
 from flask_login import login_required, current_user
 
 from webapp import db
+from webapp.utils import open_doc
 from webapp.searches.forms import SearchForm
 from webapp.searches.models import SearchQuery, SearchResult, SearchCollection
 from webapp.static.model.textsim.search_index import index_searcher
@@ -71,3 +72,10 @@ def results():
                 # db.session.commit()
 
     return render_template('results.html', query=query, results=results)
+
+@searches.route("/open_document", methods=['GET', 'POST'])
+def open_document():
+    # name = request.args.get('name')
+    # print(name.keys())
+    open_doc()
+    return (''), 204

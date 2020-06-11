@@ -38,6 +38,7 @@
                     <th class="search-output-section" scope="col">Bedrijf</th>
                     <th class="search-output-section" scope="col">Titel</th>
                     <th class="search-output-section" scope="col">Score</th>
+                    <th class="search-output-section" scope="col">File</th>
                   </tr>
                 </thead>
                 {% for hit in results[key] %}
@@ -47,6 +48,12 @@
                     <td class="search-outut-value"> {{ hit['title'] }} </td>
                     <!-- <td class="search-outut-value"> {{ hit['highlights'] }} </td> -->
                     <td class="search-outut-value"> {{ '%0.3f'| format(hit['score']) }} </td>
+                    <td>
+                      <!-- <form action="POST" action="{{ url_for('searches.open_document') }}">
+                        <button type="submit">Open</button>
+                      </form> -->
+                      <a href="{{ url_for('searches.open_document') }}"><button>Open</button></a>
+                    </td>
                   </tr>
                 {% endfor %}
               </table>

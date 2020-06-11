@@ -47,12 +47,12 @@ def find_doc(path, name):
             return os.path.join(root, name)
 
 
-def open_doc(result):
+def open_doc():
     """Opening selected document, if it is found document structure"""
 
     teamdrive = get_teamdrive_dir()
-    filename = result['path']
-    	
+    filename = 'Aanvraag WBSO 2018 1 - 6 AM Impact.pdf'
+
     # Check for file extension
     if len(filename.split('.')) != 2:
         extensions = ['.doc', '.docx', '.pdf']
