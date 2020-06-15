@@ -29,8 +29,8 @@
         <ul class="navbar-nav ml-auto mt-2">          
           {% if current_user.is_authenticated %}
             <li class="nav-item"><a class="nav-link" href="{{ url_for('searches.search') }}">Zoek</a></li>
-            <li class="nav-item"><a class="nav-link" href="{{ url_for('users.history', user_id=current_user.id) }}">Geschiedenis</a></li>
-            <li class="nav-item"><a class="nav-link" href="{{ url_for('users.account') }}">Account</a></li>
+            <!-- <li class="nav-item"><a class="nav-link" href="{{ url_for('users.history', user_id=current_user.id) }}">Geschiedenis</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('users.account') }}">Account</a></li> -->
             {% if current_user.is_admin() %}
               <li class="nav-item"><a class="nav-link" href="/admin">Admin</a></li>
             {% endif %}

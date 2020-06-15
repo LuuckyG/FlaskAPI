@@ -4,14 +4,11 @@ $(document).ready(function(){
 
 
 function filterContent() {
-    var selectedSection = document.getElementById('filter-results').value
-    console.log("selection is:", selectedSection)
-    var resultSections = document.getElementsByClassName('search-output-section')
-    console.log(resultSections)
+    var selectedSection = document.getElementById('filter-results').value;
+    var resultSections = document.getElementsByClassName('search-output-section');
     
     for (var i = 0; i < resultSections.length; i++)
         {
-            console.log("in for loop ",resultSections[i].id, selectedSection)
             if (resultSections[i].id == selectedSection) {
                 resultSections[i].style.display = 'block';
             } else {
@@ -23,7 +20,7 @@ function filterContent() {
 
 function openDocument(form_id) {
     form = document.getElementById(form_id).submit();
-    location.reload()
+    location.reload();
     return false;
 }
 

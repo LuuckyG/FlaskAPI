@@ -86,6 +86,6 @@ def open_document():
         returned_doc = open_doc(filename=filename)
         if not returned_doc:
             # TODO: Flashed message is not shown, need a way around
-            # redirecting the user and still showing the message. --> Toastr?
+            # redirecting the user and still showing the message. --> AJAX
             flash('Opening Document Unsuccesfull. Could not find the corresponding document.', 'danger')
     return (''), 204

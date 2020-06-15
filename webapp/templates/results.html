@@ -62,12 +62,12 @@
                       <form class="open-doc-form" id="form-{{ key }}-{{ loop.index0 }}" method="POST" 
                               action="{{ url_for('searches.open_document', filename=hit['path']) }}">
                         {% if hit['path'].split('.')[1] == 'doc' or hit['path'].split('.')[1] == 'docx'%}
-                          <a class="open-doc-link" href="" 
+                          <a class="open-doc-link" href="#" 
                             onclick="openDocument('form-{{ key }}-{{ loop.index0 }}')">
                             <i class="fa fa-file-word-o"></i>
                           </a>
                         {% else %}
-                          <a class="open-doc-link" href="" 
+                          <a class="open-doc-link" href="#" 
                             onclick="openDocument('form-{{ key }}-{{ loop.index0 }}')">
                             <i class="fa fa-file-pdf-o"></i>
                           </a>
@@ -83,7 +83,9 @@
       </div>
     </div>
     
-    <a class="btn btn-outline-info" style="display: block;" href="{{ url_for('main.index') }}"><span>Zoek opnieuw</span></a>
+    <div class="search-again-btn">
+      <a class="btn btn-outline-info" href="{{ url_for('searches.search') }}"><span>Zoek opnieuw</span></a>
+    </div>
 
   </div>
 {% endblock content%}
