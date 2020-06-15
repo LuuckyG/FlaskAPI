@@ -23,6 +23,7 @@ function filterContent() {
 
 function openDocument(form_id) {
     form = document.getElementById(form_id).submit();
+    location.reload()
     return false;
 }
 

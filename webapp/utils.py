@@ -47,14 +47,13 @@ def find_doc(path, name):
             return os.path.join(root, name)
 
 
-def open_doc():
-    """Opening selected document, if it is found document structure"""
+def open_doc(filename):
+    """If filename is found, corresponding document is opened."""
 
     teamdrive = get_teamdrive_dir()
-    filename = 'Aanvraag WBSO 2018 1 - 6 AM Impact.pdf'
 
     # Check for file extension
-    if len(filename.split('.')) != 2:
+    if len(filename.split('.')) == 1:
         extensions = ['.doc', '.docx', '.pdf']
         for extension in extensions:
             filepath = find_doc(teamdrive, (filename + extension))
@@ -65,5 +64,6 @@ def open_doc():
 
     if filepath:
         os.startfile(filepath, 'open')
+        return True
     else:
-        return 'Cannot find this document..'
+        return False

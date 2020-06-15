@@ -1,6 +1,7 @@
+import os
 from datetime import datetime
 
-from flask import Blueprint, render_template, redirect, url_for, request
+from flask import Blueprint, render_template, redirect, url_for, request, flash
 from flask_login import login_required, current_user
 
 from webapp import db
@@ -15,6 +16,7 @@ searches = Blueprint('searches', __name__)
 @searches.route('/search', methods=['GET', 'POST'])
 @login_required
 def search():
+    """Searching for tenders"""
     form = SearchForm()
     if form.validate_on_submit():
         q = SearchQuery(
@@ -40,7 +42,8 @@ def search():
 
 @searches.route('/results', methods=['GET', 'POST'])
 @login_required
-def results(): 
+def results():
+    """Showing results based on input search query"""
     query = SearchQuery.query.get_or_404(int(request.args.get('query_id')))
     sc = db.session.query(SearchQuery).\
         join(SearchCollection).filter(SearchCollection.query_id==query.id).first()
@@ -75,7 +78,14 @@ def results():
 
 @searches.route("/open_document", methods=['GET', 'POST'])
 def open_document():
-    # name = request.args.get('name')
-    # print(name.keys())
-    open_doc()
+    """Function to open selected file with word or adobe, 
+    and stay on the results page afterwards"""
+
+    if request.method == 'POST':
+        filename = request.args.get('filename')
+        returned_doc = open_doc(filename=filename)
+        if not returned_doc:
+            # TODO: Flashed message is not shown, need a way around
+            # redirecting the user and still showing the message. --> Toastr?
+            flash('Opening Document Unsuccesfull. Could not find the corresponding document.', 'danger')
     return (''), 204
