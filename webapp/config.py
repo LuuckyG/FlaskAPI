@@ -29,8 +29,8 @@ class Config(object):
     MAIL_SERVER = os.environ.get('MAIL_SERVER')
     MAIL_PORT = int(os.environ.get('MAIL_PORT') or 25)
     MAIL_USE_TLS = os.environ.get('MAIL_USE_TLS') is not None
-    MAIL_USERNAME = os.environ.get('EMAIL_USER')
-    MAIL_PASSWORD = os.environ.get('EMAIL_PASS')
+    MAIL_USERNAME = os.environ.get('EMAIL_USER') or ''
+    MAIL_PASSWORD = os.environ.get('EMAIL_PASS') or ''
     ADMINS = os.environ.get('ADMINS')
     MAIL_DEFAULT_SENDER = os.environ.get('MAIL_DEFAULT_SENDER')
 

@@ -1,3 +1,5 @@
+import os
+from pathlib import Path
 from functools import wraps
 from flask import url_for, request, redirect, session, abort
 
@@ -28,3 +30,40 @@ def requires_access_level(access_level):
             return f(*args, **kwargs)
         return decorated_function
     return decorator
+
+
+### OPENING SELECTED WBSO TENDER ###
+def get_teamdrive_dir():
+    """Get users home directory and combine this with teamdrive directory"""
+    home = str(Path.home())
+    teamdrive = r'Evolvalor\Cura Innova Ventures B.V. hodn Evolvalor Team Site - Evolvalor TeamDrive'
+    return os.path.join(home, teamdrive)
+
+
+def find_doc(path, name):
+    """Finding document in Teamdrive"""
+    for root, dirs, files in os.walk(path):
+        if name in files:
+            return os.path.join(root, name)
+
+
+def open_doc(filename):
+    """If filename is found, corresponding document is opened."""
+
+    teamdrive = get_teamdrive_dir()
+
+    # Check for file extension
+    if len(filename.split('.')) == 1:
+        extensions = ['.doc', '.docx', '.pdf']
+        for extension in extensions:
+            filepath = find_doc(teamdrive, (filename + extension))
+            if filepath:
+                break
+    else:
+        filepath = find_doc(teamdrive, filename)
+
+    if filepath:
+        os.startfile(filepath, 'open')
+        return True
+    else:
+        return False
