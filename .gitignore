@@ -12,5 +12,7 @@ webapp/webapp.db
 webapp/test.db
 
 .flaskenv
+.env
+
 .coverage
 htmlcov/
