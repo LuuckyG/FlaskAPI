@@ -91,6 +91,8 @@ h5 {
   width: inherit;
 }
 
+#filter-results:hover { cursor: pointer; }
+
 .search-ouput {
   display: flex;
   flex-direction: column;
