@@ -35,26 +35,34 @@ $(function checkCurrentUser() {
 
 
 function activityWatcher() {
-    var timer;
-    var secondsSinceLastActivity = 0;
-    var maxInactivity = (60 * 10); // 10 minutes
+    var warningTime = (.2 * 60 * 1000); // 9 minutes
+    var maxInactivity = (.5 * 60 * 1000); // 10 minutes
 
-    // Update activity tracker every 5 seconds
-    setInterval(function() {
-        secondsSinceLastActivity += 5;
-        console.log(secondsSinceLastActivity + 'sec since last activity!');
-        
-        // Log user out
-        if (secondsSinceLastActivity > maxInactivity) { location.href = '/logout'; }
+    var warningTimer;
+    var logoutTimer;
 
-    }, 5000);
+    function warningMessage() {
+        alert('Without any activity you are going to get logged out in 60 seconds!')
+    }
 
+    function logoutUser() { location.href = '/logout' }
+    
+    function startTimers() {
+        warningTimer = setTimeout(warningMessage, warningTime);
+        logoutTimer = setTimeout(logoutUser, maxInactivity);
+    }
+    
+    function resetTimers() {
+        clearTimeout(warningTimer);
+        clearTimeout(logoutTimer);
+        startTimers();
+    }
 
-    function activity() { secondsSinceLastActivity = 0; }
+    function activity() { resetTimers(); }
 
     var activityEvents = [
-        'mousedown', 'mouseclick', 'keydown', 
-        'scroll', 'touchstart'
+        'mousedown', 'mouseclick', 'mousemove',
+        'keydown', 'scroll', 'touchstart'
     ];
 
     activityEvents.forEach(function(eventName) {
