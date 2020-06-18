@@ -37,7 +37,7 @@ $(function checkCurrentUser() {
 function activityWatcher() {
     var timer;
     var secondsSinceLastActivity = 0;
-    var maxInactivity = (3 * 5);
+    var maxInactivity = (60 * 10); // 10 minutes
 
     // Update activity tracker every 5 seconds
     setInterval(function() {
