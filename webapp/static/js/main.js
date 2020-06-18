@@ -25,8 +25,40 @@ function openDocument(form_id) {
 }
 
 
+// Automatic user logout functionality when inactive
+$(function checkCurrentUser() {
+    // If user, start timing (non-) activity
+    $.get('/check_current_user', function(user, status) {
+        if (user) { activityWatcher() }
+    });
+});
 
-window.onload = function() {
-    let filter = document.getElementById('filter-results');
-    filter.addEventListener('change', filterContent())
+
+function activityWatcher() {
+    var timer;
+    var secondsSinceLastActivity = 0;
+    var maxInactivity = (3 * 5);
+
+    // Update activity tracker every 5 seconds
+    setInterval(function() {
+        secondsSinceLastActivity += 5;
+        console.log(secondsSinceLastActivity + 'sec since last activity!');
+        
+        // Log user out
+        if (secondsSinceLastActivity > maxInactivity) { location.href = '/logout'; }
+
+    }, 5000);
+
+
+    function activity() { secondsSinceLastActivity = 0; }
+
+    var activityEvents = [
+        'mousedown', 'mouseclick', 'keydown', 
+        'scroll', 'touchstart'
+    ];
+
+    activityEvents.forEach(function(eventName) {
+        document.addEventListener(eventName, activity, true);
+    });
+
 }

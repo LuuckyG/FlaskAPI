@@ -6,7 +6,7 @@ from webapp.users.forms import LogInForm, RegistrationForm, RequestResetForm, Re
 from webapp.searches.models import SearchQuery, SearchResult, SearchCollection, WBSO
 
 from datetime import datetime
-from flask import (Blueprint, current_app, redirect, 
+from flask import (Blueprint, current_app, redirect, jsonify,
                     render_template, url_for, request, flash, session)
 from flask_login import login_user, logout_user, current_user, login_required
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -26,7 +26,7 @@ def login():
         # Query database for username
         user = User.query.filter_by(username=form.username.data).first()
         if user and bcrypt.check_password_hash(user.password, form.password.data):
-            session['email'] = user.email
+            session['username'] = user.username
             login_user(user, remember=form.remember.data)
 
             # Update online status
@@ -54,6 +54,7 @@ def logout():
     logout_user()
 
     # Redirect user to login form
+    flash(f'You have been logged out!', 'info')
     return redirect(url_for('users.login'))
 
 
@@ -127,3 +128,8 @@ def reset_token(token):
         flash(f'Your password has been updated! You are now able to log in.', 'success')
         return redirect(url_for("users.login"))
     return render_template('reset_token.html', form=form)
+
+@users.route('/check_current_user')
+def check_current_user(): 
+    # session_data = list(session.keys())
+    return jsonify(current_user.is_authenticated)
