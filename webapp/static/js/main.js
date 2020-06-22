@@ -25,18 +25,43 @@ function openDocument(form_id) {
 }
 
 
+// Log user into sharepoint, if credentials
+function checkSharepointCredentials() {
+    $.get('/check_sharepoint_credentials', function(user_data) {
+        console.log(user_data)
+        // If credentials
+        if (user_data) { 
+            $.get('/sharepoint_login'), function(data) { 
+                console.log(data)
+                // Display document found from sharepoint
+                doc_iframe = document.getElementById('openedDocumentFrame');
+                doc_iframe.innerHTML = data;
+            }
+        } else { $('#loginModal').modal('show'); }
+    });
+};
+
+
+// Close modal after filling in credentials
+$(function closeModalOnSubmit() {
+    $('#modalSubmitBtn').on('click', function() {
+        $('#loginModal').modal('hide');
+    });
+});
+
+
 // Automatic user logout functionality when inactive
 $(function checkCurrentUser() {
     // If user, start timing (non-) activity
-    $.get('/check_current_user', function(user, status) {
+    $.get('/check_current_user', function(user) {
         if (user) { activityWatcher() }
     });
 });
 
 
 function activityWatcher() {
-    var warningTime = (.2 * 60 * 1000); // 9 minutes
-    var maxInactivity = (.5 * 60 * 1000); // 10 minutes
+    var warningTime = (9 * 60 * 1000); // 9 minutes
+    var maxInactivity = (10 * 60 * 1000); // 10 minutes
 
     var warningTimer;
     var logoutTimer;

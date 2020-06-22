@@ -114,9 +114,20 @@ h5 { font-size: 18px; }
 }
 
 .search-again-btn > a {
-  width: 100%
+  width: 100%;
 }
 
+#loginModal {
+  padding: 50px;
+  opacity: 100;
+}
+
+#openedDocumentFrame {
+  display: none;
+  height: 110vh;
+  width: 80vw;
+  border: 1px solid #222;
+}
 
 /* Footer styling */
 .footer-wrapper {
