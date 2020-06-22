@@ -1,6 +1,6 @@
 from webapp import db, bcrypt, mail
 from webapp.utils import requires_access_level
-from webapp.users.utils import send_reset_email
+from webapp.users.utils import send_reset_email #, login_sharepoint
 from webapp.users.models import User, ACCESS
 from webapp.users.forms import LogInForm, RegistrationForm, RequestResetForm, ResetPasswordForm
 from webapp.searches.models import SearchQuery, SearchResult, SearchCollection, WBSO
@@ -129,7 +129,34 @@ def reset_token(token):
         return redirect(url_for("users.login"))
     return render_template('reset_token.html', form=form)
 
+
 @users.route('/check_current_user')
 def check_current_user(): 
-    # session_data = list(session.keys())
     return jsonify(current_user.is_authenticated)
+
+
+@users.route('/check_sharepoint_credentials')
+def check_sharepoint_credentials():
+    session_keys = list(session.keys())
+    return jsonify('sharepoint_email' in session_keys 
+                   and 'sharepoint_password' in session_keys)
+
+
+@users.route('/set_sharepoint_credentials', methods=['GET', 'POST'])
+def set_sharepoint_credentials():
+    if request.form.get('sharepoint_email') == "" or request.form.get('sharepoint_password') == "":
+        flash("Please fill in all the fields.", "info")
+    else:
+        session['sharepoint_email'] = request.form.get('sharepoint_email')
+        session['sharepoint_password'] = request.form.get('sharepoint_password')
+    return (''), 204
+
+
+@users.route('/sharepoint_login', methods=['GET', 'POST'])
+@login_required
+def sharepoint_login():
+    if request.method == 'POST':
+        document = login_sharepoint(session['sharepoint_email'],
+                                    session['sharepoint_password'])
+        return document
+
