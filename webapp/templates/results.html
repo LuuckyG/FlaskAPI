@@ -53,6 +53,7 @@
                     <th class="search-output-table" scope="col">Titel</th>
                     <th class="search-output-table" scope="col">Score</th>
                     <th class="search-output-table" scope="col">Filename</th>
+                    <th class="search-output-table" scope="col">File</th>
                   </tr>
                 </thead>
                 {% for hit in results[key] %}
@@ -61,10 +62,10 @@
                     <td class="search-output-key"> {{ hit['bedrijf'] }} </td>
                     <td class="search-outut-value"> {{ hit['title'] }} </td>
                     <td class="search-outut-value"> {{ '%0.3f'| format(hit['score']) }} </td>
-                    <td class="search-outut-value"> {{ hit['path'] }}
-
+                    <td class="search-outut-value"> {{ hit['path'] }} </td>
+                    <td class="search-outut-value">
                       <form class="open-doc-form" id="form-{{ key }}-{{ loop.index0 }}" method="POST" 
-                              action="{{ url_for('searches.open_document', filename=hit['path']) }}" target="opened_document_frame">
+                              action="{{ url_for('searches.open_document', filename=hit['path']) }}" target="#opened_document_frame">
                         <a class="open-doc-link" href="#"
                           onclick="checkSharepointCredentials('form-{{ key }}-{{ loop.index0 }}')">
                         {% if hit['path'].split('.')[1] == 'doc' or hit['path'].split('.')[1] == 'docx'%}
@@ -85,17 +86,11 @@
     </div>
 
 
-
-    <!-- iFrame with opened document -->
-    <iframe id="openedDocumentFrame">
-      OPEN DOCUMENT HERE
-    </iframe>
-    
     <!-- Search again button -->
     <div class="search-again-btn">
       <a class="btn btn-outline-info" href="{{ url_for('searches.search') }}"><span>Zoek opnieuw</span></a>
     </div>
-    
+
     <!-- Login to Sharepoint Modal -->
     <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="loginModalTitle" aria-hidden="true">
       <div class="modal-dialog" role="document">
@@ -114,7 +109,7 @@
                   </div>
                   <div class="form-group">
                     <label for="sharepoint_password">Password</label>
-                    <input type="text" class="form-control" id="sharepoint_password" name="sharepoint_password">
+                    <input type="password" class="form-control" id="sharepoint_password" name="sharepoint_password">
                   </div>
                   <p><small>This will not be saved and only be remembered for this session.</small></p>
                   <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
