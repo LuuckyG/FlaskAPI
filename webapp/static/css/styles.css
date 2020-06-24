@@ -110,7 +110,7 @@ h5 { font-size: 18px; }
   display: block;
   width: 50%;
   margin: auto;
-  padding-top: 10px;
+  padding: 10px 0 40px 0;
 }
 
 .search-again-btn > a {
@@ -120,13 +120,6 @@ h5 { font-size: 18px; }
 #loginModal {
   padding: 50px;
   opacity: 100;
-}
-
-#openedDocumentFrame {
-  display: none;
-  height: 110vh;
-  width: 80vw;
-  border: 1px solid #222;
 }
 
 /* Footer styling */

@@ -28,16 +28,12 @@ function openDocument(form_id) {
 // Log user into sharepoint, if credentials
 function checkSharepointCredentials() {
     $.get('/check_sharepoint_credentials', function(user_data) {
-        console.log(user_data)
         // If credentials
         if (user_data) { 
-            $.get('/sharepoint_login'), function(data) { 
-                console.log(data)
-                // Display document found from sharepoint
-                doc_iframe = document.getElementById('openedDocumentFrame');
-                doc_iframe.innerHTML = data;
-            }
-        } else { $('#loginModal').modal('show'); }
+            $.getJSON('/sharepoint_login');
+        } else { 
+            $('#loginModal').modal('show'); 
+        }
     });
 };
 
