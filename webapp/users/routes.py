@@ -1,6 +1,6 @@
 from webapp import db, bcrypt, mail
 from webapp.utils import requires_access_level
-from webapp.users.utils import send_reset_email #, login_sharepoint
+from webapp.users.utils import send_reset_email, ChromeWebDriver
 from webapp.users.models import User, ACCESS
 from webapp.users.forms import LogInForm, RegistrationForm, RequestResetForm, ResetPasswordForm
 from webapp.searches.models import SearchQuery, SearchResult, SearchCollection, WBSO
@@ -10,9 +10,31 @@ from flask import (Blueprint, current_app, redirect, jsonify,
                     render_template, url_for, request, flash, session)
 from flask_login import login_user, logout_user, current_user, login_required
 from werkzeug.security import check_password_hash, generate_password_hash
+from selenium.webdriver.remote.command import Command
 
 
 users = Blueprint('users', __name__)
+
+chrome_driver = None
+
+
+def initiatie_driver():
+    global chrome_driver
+    if check_sharepoint_credentials():
+        chrome_driver = ChromeWebDriver(email=session['sharepoint_email'], 
+                                        password=session['sharepoint_password'])
+
+
+def check_existence_driver():
+    global chrome_driver
+    DISCONNECTED_MSG = 'Unable to evaluate script: disconnected: not connected to DevTools\n'
+
+    if not isinstance(chrome_driver, ChromeWebDriver):
+        initiatie_driver()
+    else:
+        if len(chrome_driver.driver.get_log('driver')) > 0:
+            if chrome_driver.driver.get_log('driver')[-1]['message'] == DISCONNECTED_MSG:
+                initiatie_driver()
 
 
 @users.route("/login", methods=["GET", "POST"])
@@ -139,7 +161,7 @@ def check_current_user():
 def check_sharepoint_credentials():
     session_keys = list(session.keys())
     return jsonify('sharepoint_email' in session_keys 
-                   and 'sharepoint_password' in session_keys)
+            and 'sharepoint_password' in session_keys)
 
 
 @users.route('/set_sharepoint_credentials', methods=['GET', 'POST'])
@@ -149,14 +171,20 @@ def set_sharepoint_credentials():
     else:
         session['sharepoint_email'] = request.form.get('sharepoint_email')
         session['sharepoint_password'] = request.form.get('sharepoint_password')
+
+        initiatie_driver()
+
     return (''), 204
 
 
 @users.route('/sharepoint_login', methods=['GET', 'POST'])
 @login_required
 def sharepoint_login():
-    if request.method == 'POST':
-        document = login_sharepoint(session['sharepoint_email'],
-                                    session['sharepoint_password'])
-        return document
+    global chrome_driver
 
+    check_existence_driver()
+
+    filename='WBSO 2017- Eight Media BV- per 1 tm 6.pdf'
+    chrome_driver.search(filename=filename)
+
+    return  (''), 204
