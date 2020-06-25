@@ -6,13 +6,14 @@ from webapp.users.forms import LogInForm, RegistrationForm, RequestResetForm, Re
 from webapp.searches.models import SearchQuery, SearchResult, SearchCollection, WBSO
 
 from datetime import datetime
-from flask import (Blueprint, current_app, redirect, 
+from flask import (Blueprint, current_app, redirect, jsonify,
                     render_template, url_for, request, flash, session)
 from flask_login import login_user, logout_user, current_user, login_required
 from werkzeug.security import check_password_hash, generate_password_hash
 
 
 users = Blueprint('users', __name__)
+inactive = True
 
 
 @users.route("/login", methods=["GET", "POST"])
@@ -26,7 +27,7 @@ def login():
         # Query database for username
         user = User.query.filter_by(username=form.username.data).first()
         if user and bcrypt.check_password_hash(user.password, form.password.data):
-            session['email'] = user.email
+            session['username'] = user.username
             login_user(user, remember=form.remember.data)
 
             # Update online status
@@ -54,6 +55,7 @@ def logout():
     logout_user()
 
     # Redirect user to login form
+    flash(f'You have been logged out!', 'info')
     return redirect(url_for('users.login'))
 
 
@@ -65,14 +67,19 @@ def register():
 
     form = RegistrationForm()
     if form.validate_on_submit():
-        # Add user to database
-        hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
-        user = User(username=form.username.data, email=form.email.data, password=hashed_password)
-        db.session.add(user)
-        db.session.commit()
 
-        # Redirect user to login page
-        flash(f'Account created for {form.username.data}!', 'success')
+        if inactive:
+            flash(f'Registration is closed!', 'danger')
+        else:
+            # Add user to database
+            hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
+            user = User(username=form.username.data, email=form.email.data, password=hashed_password)
+            db.session.add(user)
+            db.session.commit()
+
+            # Redirect user to login page
+            flash(f'Account created for {form.username.data}!', 'success')
+
         return redirect(url_for("users.login"))
     return render_template('register.html', title='Register', form=form)
 
@@ -127,3 +134,8 @@ def reset_token(token):
         flash(f'Your password has been updated! You are now able to log in.', 'success')
         return redirect(url_for("users.login"))
     return render_template('reset_token.html', form=form)
+
+
+@users.route('/check_current_user')
+def check_current_user(): 
+    return jsonify(current_user.is_authenticated)

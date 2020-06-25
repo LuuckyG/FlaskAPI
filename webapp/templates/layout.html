@@ -37,7 +37,7 @@
             <li class="nav-item"><a class="nav-link" href="{{ url_for('users.logout') }}">Log Uit</a></li>
           {% else %}
             <li class="nav-item"><a class="nav-link" href="{{ url_for('users.login') }}">Log In</a></li>
-            <li class="nav-item"><a class="nav-link" href="{{ url_for('users.register') }}">Registreer</a></li>
+            <!-- <li class="nav-item"><a class="nav-link" href="{{ url_for('users.register') }}">Registreer</a></li> -->
           {% endif %}
           <li class="nav-item"><a href="tel:0031854014704"  style="color:#FFC809">Call +31 (0) 85 4014 704</a></li>
         </ul>
@@ -48,13 +48,13 @@
       <div class="col-md-8">
         {% with messages = get_flashed_messages(with_categories=True) %}
           {% if messages %}
-              {% for category, message in messages %}
-                  <header>
-                      <div class="alert alert-{{ category }} border text-center" role="alert">
-                          {{ message }}
-                      </div>
-                  </header>
-              {% endfor %}
+            {% for category, message in messages %}
+                <header>
+                    <div class="alert alert-{{ category }} border text-center" role="alert">
+                        {{ message }}
+                    </div>
+                </header>
+            {% endfor %}
           {% endif %}
         {% endwith %}
       </div>
@@ -86,9 +86,8 @@
     </div>  
   </div>
 
-  <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
   <script src="{{ url_for('static', filename='js/main.js') }}" type ="text/javascript" charset="UTF-8"></script>
 </body>
 </html>
