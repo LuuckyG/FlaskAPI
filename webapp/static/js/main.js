@@ -17,23 +17,16 @@ function filterContent() {
         }
 }
 
-
-function openDocument(form_id) {
-    form = document.getElementById(form_id).submit();
-    location.reload();
-    return false;
-}
-
-
 // Log user into sharepoint, if credentials
-function checkSharepointCredentials() {
+function checkCredentialsandOpenDocument(filename) {
     $.get('/check_sharepoint_credentials', function(user_data) {
         // If credentials
         if (user_data) { 
-            $.getJSON('/sharepoint_login');
-        } else { 
-            $('#loginModal').modal('show'); 
-        }
+            $.getJSON('/open_document', {
+                filename: filename
+            });
+        } 
+        else { $('#loginModal').modal('show'); }
     });
 };
 
