@@ -1,6 +1,6 @@
 from webapp import db, bcrypt, mail
 from webapp.utils import requires_access_level
-from webapp.users.utils import send_reset_email, ChromeWebDriver
+from webapp.users.utils import send_reset_email
 from webapp.users.models import User, ACCESS
 from webapp.users.forms import LogInForm, RegistrationForm, RequestResetForm, ResetPasswordForm
 from webapp.searches.models import SearchQuery, SearchResult, SearchCollection, WBSO
@@ -10,31 +10,10 @@ from flask import (Blueprint, current_app, redirect, jsonify,
                     render_template, url_for, request, flash, session)
 from flask_login import login_user, logout_user, current_user, login_required
 from werkzeug.security import check_password_hash, generate_password_hash
-from selenium.webdriver.remote.command import Command
 
 
 users = Blueprint('users', __name__)
-
-chrome_driver = None
-
-
-def initiatie_driver():
-    global chrome_driver
-    if check_sharepoint_credentials():
-        chrome_driver = ChromeWebDriver(email=session['sharepoint_email'], 
-                                        password=session['sharepoint_password'])
-
-
-def check_existence_driver():
-    global chrome_driver
-    DISCONNECTED_MSG = 'Unable to evaluate script: disconnected: not connected to DevTools\n'
-
-    if not isinstance(chrome_driver, ChromeWebDriver):
-        initiatie_driver()
-    else:
-        if len(chrome_driver.driver.get_log('driver')) > 0:
-            if chrome_driver.driver.get_log('driver')[-1]['message'] == DISCONNECTED_MSG:
-                initiatie_driver()
+inactive = True
 
 
 @users.route("/login", methods=["GET", "POST"])
@@ -88,14 +67,19 @@ def register():
 
     form = RegistrationForm()
     if form.validate_on_submit():
-        # Add user to database
-        hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
-        user = User(username=form.username.data, email=form.email.data, password=hashed_password)
-        db.session.add(user)
-        db.session.commit()
 
-        # Redirect user to login page
-        flash(f'Account created for {form.username.data}!', 'success')
+        if inactive:
+            flash(f'Registration is closed!', 'danger')
+        else:
+            # Add user to database
+            hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
+            user = User(username=form.username.data, email=form.email.data, password=hashed_password)
+            db.session.add(user)
+            db.session.commit()
+
+            # Redirect user to login page
+            flash(f'Account created for {form.username.data}!', 'success')
+
         return redirect(url_for("users.login"))
     return render_template('register.html', title='Register', form=form)
 
@@ -155,36 +139,3 @@ def reset_token(token):
 @users.route('/check_current_user')
 def check_current_user(): 
     return jsonify(current_user.is_authenticated)
-
-
-@users.route('/check_sharepoint_credentials')
-def check_sharepoint_credentials():
-    session_keys = list(session.keys())
-    return jsonify('sharepoint_email' in session_keys 
-            and 'sharepoint_password' in session_keys)
-
-
-@users.route('/set_sharepoint_credentials', methods=['GET', 'POST'])
-def set_sharepoint_credentials():
-    if request.form.get('sharepoint_email') == "" or request.form.get('sharepoint_password') == "":
-        flash("Please fill in all the fields.", "info")
-    else:
-        session['sharepoint_email'] = request.form.get('sharepoint_email')
-        session['sharepoint_password'] = request.form.get('sharepoint_password')
-
-        initiatie_driver()
-
-    return (''), 204
-
-
-@users.route('/sharepoint_login', methods=['GET', 'POST'])
-@login_required
-def sharepoint_login():
-    global chrome_driver
-
-    check_existence_driver()
-
-    filename='WBSO 2017- Eight Media BV- per 1 tm 6.pdf'
-    chrome_driver.search(filename=filename)
-
-    return  (''), 204

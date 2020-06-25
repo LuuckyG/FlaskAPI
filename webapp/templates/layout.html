@@ -37,7 +37,7 @@
             <li class="nav-item"><a class="nav-link" href="{{ url_for('users.logout') }}">Log Uit</a></li>
           {% else %}
             <li class="nav-item"><a class="nav-link" href="{{ url_for('users.login') }}">Log In</a></li>
-            <li class="nav-item"><a class="nav-link" href="{{ url_for('users.register') }}">Registreer</a></li>
+            <!-- <li class="nav-item"><a class="nav-link" href="{{ url_for('users.register') }}">Registreer</a></li> -->
           {% endif %}
           <li class="nav-item"><a href="tel:0031854014704"  style="color:#FFC809">Call +31 (0) 85 4014 704</a></li>
         </ul>
@@ -48,13 +48,13 @@
       <div class="col-md-8">
         {% with messages = get_flashed_messages(with_categories=True) %}
           {% if messages %}
-              {% for category, message in messages %}
-                  <header>
-                      <div class="alert alert-{{ category }} border text-center" role="alert">
-                          {{ message }}
-                      </div>
-                  </header>
-              {% endfor %}
+            {% for category, message in messages %}
+                <header>
+                    <div class="alert alert-{{ category }} border text-center" role="alert">
+                        {{ message }}
+                    </div>
+                </header>
+            {% endfor %}
           {% endif %}
         {% endwith %}
       </div>
