@@ -20,7 +20,6 @@ class ChromeWebDriver:
     options.add_argument("--disable-dev-shm-usage")
     options.add_argument("--no-sandbox")
     
-    
     url = 'https://login.microsoftonline.com/'
     team_site_url = r'https://evolvalor.sharepoint.com/Shared%20Documents?viewid=32a8b673%2Ddb81%2D46cd%2D8dc4%2D852098b147f6&id=%2FShared%20Documents%2FEvolvalor%20TeamDrive'
     
