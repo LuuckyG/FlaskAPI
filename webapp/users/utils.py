@@ -1,7 +1,6 @@
-from flask_mail import Message
-from flask import url_for, current_app
-
 from webapp import mail
+from flask_mail import Message
+from flask import url_for, current_app, render_template
 
 
 def send_reset_email(user):
@@ -16,3 +15,4 @@ def send_reset_email(user):
 If you did not make this request, then simply ignore this email and no changes will be made.
 """
     mail.send(msg)
+
