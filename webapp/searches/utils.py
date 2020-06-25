@@ -13,14 +13,16 @@ class ChromeWebDriver:
     Open this file and return the page of this opened file.
     """
     options = webdriver.ChromeOptions()
-    options.add_argument("disable-infobars")
-    options.add_argument("--disable-extensions")
+    options.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
+    options.add_argument("--headless")
+    options.add_argument("--disable-dev-shm-usage")
+    options.add_argument("--no-sandbox")
     
     url = 'https://login.microsoftonline.com/'
     team_site_url = r'https://evolvalor.sharepoint.com/Shared%20Documents?viewid=32a8b673%2Ddb81%2D46cd%2D8dc4%2D852098b147f6&id=%2FShared%20Documents%2FEvolvalor%20TeamDrive'
     
     def __init__(self, email, password):
-        self.driver = webdriver.Chrome(ChromeDriverManager().install(), chrome_options=self.options)
+        self.driver = webdriver.Chrome(executable_path=str(os.environ.get("CHROMEDRIVER_PATH")), chrome_options=self.options)
         self.driver.get(self.url)
         self.email = email
         self.password = password
