@@ -13,6 +13,7 @@ import logging
 from logging.handlers import SMTPHandler, RotatingFileHandler
 
 from webapp.config import Config
+from webapp.worker import conn
 
 # Initialize
 mail = Mail()
@@ -39,8 +40,8 @@ def create_app(config_class=Config):
     migrate.init_app(app, db)
     login_manager.init_app(app)
 
-    # app.redis = Redis.from_url(app.config['REDIS_URL'])
-    # app.task_queue = rq.Queue('webapp-tasks', connection=app.redis)
+    app.redis = Redis.from_url(app.config['REDIS_URL'])
+    app.task_queue = rq.Queue('webapp-tasks', connection=app.redis)
 
     from webapp.main.routes import main
     from webapp.users.routes import users
