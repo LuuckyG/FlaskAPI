@@ -7,6 +7,7 @@ from flask_login import login_required, current_user
 from webapp import db
 from webapp.utils import open_doc
 from webapp.searches.forms import SearchForm
+from webapp.searches.utils import combine_search_form_inputs
 from webapp.searches.models import SearchQuery, SearchResult, SearchCollection
 from webapp.static.model.textsim.search_index import index_searcher
 

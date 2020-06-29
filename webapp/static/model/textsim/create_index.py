@@ -53,7 +53,7 @@ def populate_index(dirname='src/model/textsim/indexdir',
 
     # Create writer to add content to index
     with ix.writer() as writer:
-        for i, row in db.iterrows():
+        for _, row in db.iterrows():
             add_files(row, writer)
 
 
@@ -83,7 +83,7 @@ def get_full_text(db):
 
     full_texts = []
 
-    for i, row in db.iterrows():
+    for _, row in db.iterrows():
         full_text = ''
         for p in parts:
             full_text += p + '\n' + row[p]
