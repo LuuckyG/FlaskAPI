@@ -63,4 +63,31 @@ class ChromeWebDriver:
         # Results
         result = WebDriverWait(self.driver, 30).until(EC.presence_of_all_elements_located((By.XPATH, '//*[@id="appRoot"]/div[1]/div[3]/div/div[2]/div[2]/div[2]/div[2]/div[1]/div[1]/div/div/div[1]/div/div[2]/div/div/div/div/div/div/div[2]/div/div/div/div/div/div[1]/div/div/div[2]/div[2]/div/div/span/span/a')))[0]
         self.driver.get(result.get_attribute('href'))
-    
+
+        
+FIELDS_OF_INTEREST = ['key_terms', 
+                      'title', 
+                      'aanleiding',
+                      'opl',
+                      't_knel',
+                      'prog',
+                      't_nieuw']
+
+
+def combine_search_form_inputs(inputs):
+    search_query = ''
+
+    for field in FIELDS_OF_INTEREST:
+        try:
+            value = inputs[field]
+            if not value == '':
+
+                if not isinstance(value, str):
+                    value = str(value)
+
+                search_query += value + '.\n'
+
+        except KeyError:
+            continue
+
+    return search_query

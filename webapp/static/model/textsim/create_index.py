@@ -6,8 +6,8 @@ from whoosh.index import create_in
 from whoosh.fields import Schema, TEXT, ID, NUMERIC
 
 
-def populate_index(dirname='src/model/textsim/indexdir', 
-                   database='C:/Users/luukg/Documents/01_Evolvalor/FlaskAPI/src/model/data/database.xlsx'):
+def populate_index(dirname='webapp/static/model/textsim/indexdir', 
+                   database='C:/Users/luukg/Documents/01_Evolvalor/database.xlsx'):
     """
     Create schema and index.
 
@@ -53,7 +53,7 @@ def populate_index(dirname='src/model/textsim/indexdir',
 
     # Create writer to add content to index
     with ix.writer() as writer:
-        for i, row in db.iterrows():
+        for _, row in db.iterrows():
             add_files(row, writer)
 
 
@@ -75,18 +75,25 @@ def add_files(row, writer):
 
 def get_full_text(db):
     # Get parts of tender 
-    parts = ["Aanleiding", 
-            "Technische knelpunten", 
-            "Oplossingsrichting", 
-            "Programmeertalen, ontwikkelomgevingen en tools", 	
-            "Waarom technisch nieuw?"]
+    parts = ["filename",
+             "Bedrijf",
+             "Jaar",
+             "Projectnummer",
+             "Projecttitel",
+             "Zwaartepunt",
+             "Opdrachtgever",
+             "Aanleiding", 
+             "Technische knelpunten", 
+             "Oplossingsrichting", 
+             "Programmeertalen, ontwikkelomgevingen en tools", 	
+             "Waarom technisch nieuw?"]
 
     full_texts = []
 
-    for i, row in db.iterrows():
+    for _, row in db.iterrows():
         full_text = ''
         for p in parts:
-            full_text += p + '\n' + row[p]
+            full_text += p + '\n' + str(row[p])
             full_text += '\n\n'
         full_texts.append(full_text)
 

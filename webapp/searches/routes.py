@@ -7,6 +7,7 @@ from flask_login import login_required, current_user
 from webapp import db
 from webapp.searches.utils import ChromeWebDriver
 from webapp.searches.forms import SearchForm
+from webapp.searches.utils import combine_search_form_inputs
 from webapp.searches.models import SearchQuery, SearchResult, SearchCollection
 from webapp.static.model.textsim.search_index import index_searcher
 
@@ -47,6 +48,11 @@ def search():
                 title=form.project_titel.data,
                 zwaartepunt=form.zwaartepunt.data,
                 key_terms=form.key_terms.data,
+                aanleiding=form.aanleiding.data,
+                t_knel=form.t_knel.data,
+                opl=form.opl.data,
+                prog=form.prog.data,
+                t_nieuw=form.nieuw.data,
                 date=datetime.utcnow(),
                 user_id=current_user.id)
      
@@ -71,7 +77,10 @@ def results():
     query = SearchQuery.query.get_or_404(int(request.args.get('query_id')))
     sc = db.session.query(SearchQuery).\
         join(SearchCollection).filter(SearchCollection.query_id==query.id).first()
-    results = index_searcher(query_string=query.key_terms)
+
+    # Get all query input
+    complete_query = combine_search_form_inputs(inputs=query.__dict__)
+    results = index_searcher(query_string=complete_query)
 
     for key in results.keys():
         if results[key]:

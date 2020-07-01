@@ -4,9 +4,14 @@ from webapp import db
 class SearchQuery(db.Model):
     __tablename__ = 'search_query'
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.TEXT, default='x')
-    zwaartepunt = db.Column(db.TEXT, default='x')
-    key_terms = db.Column(db.TEXT, default='x')
+    title = db.Column(db.TEXT)
+    zwaartepunt = db.Column(db.TEXT)
+    key_terms = db.Column(db.TEXT)
+    aanleiding = db.Column(db.TEXT) 
+    t_knel = db.Column(db.TEXT) 
+    opl = db.Column(db.TEXT) 
+    prog = db.Column(db.TEXT) 
+    t_nieuw = db.Column(db.TEXT) 
     date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     search_collection = db.relationship('SearchCollection', backref='query', lazy=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
