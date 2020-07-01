@@ -6,7 +6,7 @@ from whoosh.index import create_in
 from whoosh.fields import Schema, TEXT, ID, NUMERIC
 
 
-def populate_index(dirname='./indexdir', 
+def populate_index(dirname='webapp/static/model/textsim/indexdir', 
                    database='C:/Users/luukg/Documents/01_Evolvalor/database.xlsx'):
     """
     Create schema and index.
