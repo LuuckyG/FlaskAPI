@@ -27,13 +27,9 @@ h1 {
   line-height: 45px;
 }
 
-h3 {
-  font-size: 22px;
-}
+h3 { font-size: 22px; }
 
-h5 {
-  font-size: 18px;
-}
+h5 { font-size: 18px; }
 
 /* Navbar style */
 .navbar-nav {
@@ -114,13 +110,17 @@ h5 {
   display: block;
   width: 50%;
   margin: auto;
-  padding-top: 10px;
+  padding: 10px 0 40px 0;
 }
 
 .search-again-btn > a {
-  width: 100%
+  width: 100%;
 }
 
+#loginModal {
+  padding: 50px;
+  opacity: 100;
+}
 
 /* Footer styling */
 .footer-wrapper {

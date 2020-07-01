@@ -1,17 +1,41 @@
 import os
 from datetime import datetime
 
-from flask import Blueprint, render_template, redirect, url_for, request, flash
+from flask import Blueprint, render_template, redirect, url_for, request, flash, session, jsonify
 from flask_login import login_required, current_user
 
 from webapp import db
-from webapp.utils import open_doc
+from webapp.searches.utils import ChromeWebDriver
 from webapp.searches.forms import SearchForm
 from webapp.searches.utils import combine_search_form_inputs
 from webapp.searches.models import SearchQuery, SearchResult, SearchCollection
 from webapp.static.model.textsim.search_index import index_searcher
 
 searches = Blueprint('searches', __name__)
+
+
+chrome_driver = None
+
+
+def reinitiate_driver():
+    global chrome_driver
+    session_keys = list(session.keys())
+    if ('sharepoint_email' in session_keys) and ('sharepoint_password' in session_keys):
+        chrome_driver = ChromeWebDriver(email=session['sharepoint_email'], 
+                                        password=session['sharepoint_password'])
+
+
+def check_existence_driver():
+    global chrome_driver
+    DISCONNECTED_MSG = 'Unable to evaluate script: disconnected: not connected to DevTools\n'
+
+    if not isinstance(chrome_driver, ChromeWebDriver):
+        reinitiate_driver()
+    else:
+        if len(chrome_driver.driver.get_log('driver')) > 0:
+            if chrome_driver.driver.get_log('driver')[-1]['message'] == DISCONNECTED_MSG:
+                chrome_driver.driver.quit()
+                reinitiate_driver()
 
 
 @searches.route('/search', methods=['GET', 'POST'])
@@ -85,16 +109,34 @@ def results():
 
     return render_template('results.html', query=query, results=results)
 
-@searches.route("/open_document", methods=['GET', 'POST'])
-def open_document():
-    """Function to open selected file with word or adobe, 
-    and stay on the results page afterwards"""
+@searches.route('/check_sharepoint_credentials')
+def check_sharepoint_credentials():
+    session_keys = list(session.keys())
+    return jsonify('sharepoint_email' in session_keys 
+            and 'sharepoint_password' in session_keys)
 
-    if request.method == 'POST':
-        filename = request.args.get('filename')
-        returned_doc = open_doc(filename=filename)
-        if not returned_doc:
-            # TODO: Flashed message is not shown, need a way around
-            # redirecting the user and still showing the message. --> AJAX
-            flash('Opening Document Unsuccesfull. Could not find the corresponding document.', 'danger')
+
+@searches.route('/set_sharepoint_credentials', methods=['GET', 'POST'])
+def set_sharepoint_credentials():
+    if request.form.get('sharepoint_email') == "" or request.form.get('sharepoint_password') == "":
+        flash("Please fill in all the fields.", "info")
+    else:
+        session['sharepoint_email'] = request.form.get('sharepoint_email')
+        session['sharepoint_password'] = request.form.get('sharepoint_password')
+
+        reinitiate_driver()
+
     return (''), 204
+
+
+@searches.route('/open_document', methods=['GET', 'POST'])
+@login_required
+def open_document():
+    global chrome_driver
+
+    check_existence_driver()
+
+    filename = request.args.get('filename', '', type=str)
+    chrome_driver.search(filename=filename)
+
+    return  (''), 204
