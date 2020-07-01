@@ -1,0 +1,29 @@
+{% extends "layout.html" %}
+
+{% block content %}
+  <div class="search-engine-wrapper">
+    <div class="text-wrapper">
+      <div class="section-header"><h1>WBSO Search Engine</h1></div>
+      <div class="section-content">Lorem ipsum dolor sit amet consectetur adipisicing elit. Id omnis inventore maxime, tempora tempore voluptate, quas ipsa repudiandae dolorum neque harum quibusdam? Maiores nemo dignissimos iusto velit, et aspernatur.</div>
+    </div>
+
+    <div>
+      <form method="POST" action="">
+        {{ form.hidden_tag() }}
+        <fieldset class="search-form-items form-group">
+          <legend class="search-form-legend">Upload hier de huidige versie van uw aanvraag</legend>
+
+          <div class="search-form-item form-group" id="form-input_file">
+            {{ form.input_file.label() }}
+            {{ form.input_file(class="form-control-file") }}
+          </div>
+
+        </fieldset>
+        <div class="search-form-item submit-button">
+          {{ form.submit(class="btn btn-outline-info")}}
+        </div>
+      </form>
+    </div>
+
+  </div>
+{% endblock content %}

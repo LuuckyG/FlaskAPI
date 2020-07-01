@@ -1,5 +1,12 @@
 from flask_wtf import FlaskForm
+from flask_wtf.file import FileField, FileAllowed
 from wtforms import StringField, SubmitField
+
+
+class UploadForm(FlaskForm):
+    input_file = FileField('Upload huidige versie WBSO aanvraag', validators=[FileAllowed(['doc', 'docx'])])
+    submit = SubmitField('Upload')
+
 
 class SearchForm(FlaskForm):
     project_titel = StringField('Projecttitel')

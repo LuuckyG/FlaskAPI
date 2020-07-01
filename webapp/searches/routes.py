@@ -5,7 +5,7 @@ from flask import Blueprint, render_template, redirect, url_for, request, flash,
 from flask_login import login_required, current_user
 
 from webapp import db
-from webapp.searches.forms import SearchForm
+from webapp.searches.forms import SearchForm, UploadForm
 from webapp.searches.utils import ChromeWebDriver, combine_search_form_inputs
 from webapp.searches.models import SearchQuery, SearchResult, SearchCollection
 from webapp.static.model.textsim.search_index import index_searcher
@@ -35,6 +35,21 @@ def check_existence_driver():
             if chrome_driver.driver.get_log('driver')[-1]['message'] == DISCONNECTED_MSG:
                 chrome_driver.driver.quit()
                 reinitiate_driver()
+
+
+@searches.route('/upload', methods=['GET', 'POST'])
+@login_required
+def upload():
+    """Upload current version of tender"""
+    form = UploadForm()
+
+    if form.validate_on_submit():
+
+        wbso_input = read_input(form.input_file)
+
+        return redirect(url_for('searches.results', wbso_input=wbso_input))
+    
+    return render_template('upload.html', form=form)
 
 
 @searches.route('/search', methods=['GET', 'POST'])
