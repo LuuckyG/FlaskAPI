@@ -24,6 +24,11 @@ def search():
                 title=form.project_titel.data,
                 zwaartepunt=form.zwaartepunt.data,
                 key_terms=form.key_terms.data,
+                aanleiding=form.aanleiding.data,
+                t_knel=form.t_knel.data,
+                opl=form.opl.data,
+                prog=form.prog.data,
+                t_nieuw=form.nieuw.data,
                 date=datetime.utcnow(),
                 user_id=current_user.id)
      
@@ -48,7 +53,10 @@ def results():
     query = SearchQuery.query.get_or_404(int(request.args.get('query_id')))
     sc = db.session.query(SearchQuery).\
         join(SearchCollection).filter(SearchCollection.query_id==query.id).first()
-    results = index_searcher(query_string=query.key_terms)
+
+    # Get all query input
+    complete_query = combine_search_form_inputs(inputs=query.__dict__)
+    results = index_searcher(query_string=complete_query)
 
     for key in results.keys():
         if results[key]:
