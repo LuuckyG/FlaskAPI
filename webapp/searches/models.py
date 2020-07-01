@@ -4,9 +4,9 @@ from webapp import db
 class SearchQuery(db.Model):
     __tablename__ = 'search_query'
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.TEXT, default='x')
-    zwaartepunt = db.Column(db.TEXT, default='x')
-    key_terms = db.Column(db.TEXT, default='x')
+    title = db.Column(db.TEXT)
+    zwaartepunt = db.Column(db.TEXT)
+    key_terms = db.Column(db.TEXT)
     aanleiding = db.Column(db.TEXT) 
     t_knel = db.Column(db.TEXT) 
     opl = db.Column(db.TEXT) 
