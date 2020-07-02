@@ -1,1 +1,2 @@
 web: py manage.py runserver
+worker: rq worker -u $REDIS_URL webapp-tasks
