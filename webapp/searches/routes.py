@@ -1,7 +1,8 @@
 import os
 from datetime import datetime
 
-from flask import Blueprint, render_template, redirect, url_for, request, flash, session, jsonify
+from flask import (Blueprint, render_template, redirect, url_for, request, 
+                    flash, session, jsonify, current_app)
 from flask_login import login_required, current_user
 
 from webapp import db
@@ -24,7 +25,7 @@ def reinitiate_driver():
                                         password=session['sharepoint_password'])
 
 
-def check_existence_driver():
+def _check_existence_driver():
     global chrome_driver
     DISCONNECTED_MSG = 'Unable to evaluate script: disconnected: not connected to DevTools\n'
 
@@ -35,6 +36,11 @@ def check_existence_driver():
             if chrome_driver.driver.get_log('driver')[-1]['message'] == DISCONNECTED_MSG:
                 chrome_driver.driver.quit()
                 reinitiate_driver()
+
+def check_existence_driver(filename):
+    global chrome_driver
+    _check_existence_driver()
+    chrome_driver.search(filename=filename)
 
 
 @searches.route('/search', methods=['GET', 'POST'])
@@ -115,6 +121,8 @@ def set_sharepoint_credentials():
         session['sharepoint_email'] = request.form.get('sharepoint_email')
         session['sharepoint_password'] = request.form.get('sharepoint_password')
 
+        print(dir(current_app.task_queue))
+        # current_app.task_queue.enqueue(reinitiate_driver)
         reinitiate_driver()
 
     return (''), 204
@@ -123,11 +131,12 @@ def set_sharepoint_credentials():
 @searches.route('/open_document', methods=['GET', 'POST'])
 @login_required
 def open_document():
-    global chrome_driver
-
-    check_existence_driver()
-
+    # global chrome_driver
     filename = request.args.get('filename', '', type=str)
-    chrome_driver.search(filename=filename)
+
+    # check_existence_driver()
+    current_app.task_queue.enqueue(_check_existence_driver, filename)
+    
+    # chrome_driver.search(filename=filename)
 
     return  (''), 204
