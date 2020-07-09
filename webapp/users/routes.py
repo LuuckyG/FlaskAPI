@@ -35,7 +35,7 @@ def login():
             db.session.commit()
 
             next_page = request.args.get('next')
-            return redirect(next_page) if next_page else redirect(url_for("main.index"))
+            return redirect(next_page) if next_page else redirect(url_for("searches.search"))
         else:
             flash('Login Unsuccesful. Please check username and password', 'danger')
     return render_template("login.html", title='Login', form=form)
